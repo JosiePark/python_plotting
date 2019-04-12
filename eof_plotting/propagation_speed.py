@@ -17,25 +17,34 @@ from grid_plot import square_grid_plot
 
 # READ FIRST TWO EOFS
 
-regime = 1
+regime = 2
 ii = 512
 jj = 512
-nt = 400
+nt = 100
 	
 home_dir = '/media/josiepark/Seagate Expansion Drive/PhD/DATA/Saves/%i' % regime
-fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/1/EOF/'
+fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/2/EOF/'
 
-field_file = home_dir + '/QG/eof_1-2.nc'
+field_file = home_dir + '/QG/eof_7-8.nc'
 field_data = Dataset(field_file,'r')
 psi = np.transpose(field_data.variables['Stream Function'][:nt,0,:,:])
 
-eof_file = home_dir + '/STATS/EOF/eof.nc'
-eof_data = Dataset(eof_file,'r')
-eof = np.transpose(eof_data.variables['EOFs'][0,:,:,:2])
+#eof_file = home_dir + '/STATS/EOF/eof.nc'
+#eof_data = Dataset(eof_file,'r')
+#eof = np.transpose(eof_data.variables['EOFs'][0,:,:,6:8])
+#print(eof.shape)
 
-pc_file = home_dir + '/STATS/EOF/pc.nc'
-pc_data = Dataset(pc_file,'r')
-pc = np.transpose(pc_data.variables['PCs'][:,:2])
+#pc_file = home_dir + '/STATS/EOF/pc.nc'
+#pc_data = Dataset(pc_file,'r')
+#print(pc_data)
+#pc = np.transpose(pc_data.variables['PCs'][6:8,:nt])
+#print(pc.shape)
+
+#psi = np.zeros((ii,jj,nt))
+#for t in range(nt):
+#	for m in range(2):
+#		psi[:,:,t] = psi[:,:,t] + eof[m,:,:]*pc[t,m]
+		
 
 ## out of phase by a day
 
@@ -44,11 +53,11 @@ pc = np.transpose(pc_data.variables['PCs'][:,:2])
 ## plot hovmoler diagram
 
 
-xcoord = 200
+xcoord = 0
 eps = 10
-max_ycoord = np.argmax(psi[xcoord,:,10])
-center_start = np.argmax(psi[xcoord,max_ycoord,:40])
-center_end = np.argmax(psi[xcoord,max_ycoord,center_start+eps:])
+max_ycoord = np.argmax(psi[xcoord,:,0])
+center_start = np.argmin(psi[xcoord,max_ycoord,:40])
+center_end = np.argmin(psi[xcoord,max_ycoord,center_start+eps:])
 print(max_ycoord,center_start,center_end+eps+center_start)
 
 plt.pcolor(psi[xcoord,:,:],cmap = cm.jet)
@@ -56,7 +65,7 @@ plt.xlabel('Time (days)')
 plt.ylabel('Y (km)')
 plt.ylim([0,520])
 plt.colorbar()
-fig_name = fig_dir + 'hovmoller_eof_1-2'
+fig_name = fig_dir + 'hovmoller_eof_rossbyhalf'
 plt.savefig(fig_name)
 
 

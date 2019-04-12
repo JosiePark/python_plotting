@@ -15,22 +15,28 @@ from grid_plot import square_grid_plot
 
 # READ FIRST TWO EOFS
 
-regime = 1
+regime = 2
 ii = 512
 jj = 512
 	
 home_dir = '/media/josiepark/Seagate Expansion Drive/PhD/DATA/Saves/%i' % regime
-fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/1/EOF/'
+fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/%i/EOF/' % regime
 
 eof_file = home_dir + '/STATS/EOF/eof.nc'
 eof_data = Dataset(eof_file,'r')
-eof = np.transpose(eof_data.variables['EOFs'][:,:,:,:2])
+
+if (regime == 1):
+	eof = np.transpose(eof_data.variables['EOFs'][:,:,:,:2])
+else:
+	eof = np.transpose(eof_data.variables['EOFs'][:,:,:,6:8])
 
 pc_file = home_dir + '/STATS/EOF/pc.nc'
 pc_data = Dataset(pc_file,'r')
-pc = np.transpose(pc_data.variables['PCs'][:,:2])
 
-field_data = home_dir + '/QG/eof_1-2.nc'
+if (regime == 1):
+	pc = np.transpose(pc_data.variables['PCs'][:,:2])
+else:
+	pc = np.transpose(pc_data.variables['PCs'][:,6:8])
 
 # FIND VELOCITY AND PLOT
 
@@ -66,7 +72,7 @@ xx,yy = np.mgrid[xmin:xmax:512j,xmin:xmax:512j]
 X, Y = np.meshgrid(np.linspace(0, 520., int(ii/8)), np.linspace(0, 520., int(jj/8)))
 
 plt.quiver(X,Y,np.transpose(u_tot[0,0:ii:8,0:jj:8,0]),np.transpose(u_tot[1,0:ii:8,0:jj:8,0]))
-fig_name = fig_dir + 'eof_1-2_quiver'
+fig_name = fig_dir + 'eof_rossbyhalf_quiver'
 plt.savefig(fig_name)
 
 plt.close()
@@ -93,8 +99,6 @@ for i in range(ii):
 
 amp = max(end_point - start_point)
 print(amp)
-exit()
-
 	
 
 x = np.linspace(0,520.,ii)
@@ -131,7 +135,7 @@ for i in range(ncols):
 		ax[2].set_title('Meridional Velocity')
 
 		k+=1
-fig_name = fig_dir + 'eof_1-2_velocity'
+fig_name = fig_dir + 'eof_rossbyhalf_velocity'
 plt.savefig(fig_name)
 
 

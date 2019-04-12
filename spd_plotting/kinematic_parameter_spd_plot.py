@@ -29,7 +29,6 @@ U0_SPD = np.zeros((2,nbins,2,nt))
 
 file_name = home_dir + '/STATS/SPD/KINEMATIC/kinematic_top.nc'
 spd_data = Dataset(file_name,'r')
-print(spd_data)
 SPD[0,:,:,:] = np.transpose(spd_data.variables['SPD'][:nt,:,:])
 
 file_name = home_dir + '/STATS/SPD/KINEMATIC/kinematic_zonalRossby_top.nc'
@@ -54,9 +53,8 @@ pseudo_SPD = np.zeros((2,nbins,2,nt))
 for b in range(nbins):
 	file_name = home_dir + '/STATS/SPD/PSEUDO/pseudo_uniform_SPD_bin%i.nc' % (b+1)
 	spd_data = Dataset(file_name,'r')
-	print(np.transpose(spd_data.variables['SPD'][:,0,:,:]).shape)
-	pseudo_SPD[0,b,:,:] = np.mean(np.transpose(spd_data.variables['SPD'][:,0,:,:]),1)
-	pseudo_SPD[1,b,:,:] = np.mean(np.transpose(spd_data.variables['SPD'][:,1,:,:]),1)
+	pseudo_SPD[0,b,:,:] = np.mean(np.transpose(spd_data.variables['SPD'][:,:,0,:]),1)
+	pseudo_SPD[1,b,:,:] = np.mean(np.transpose(spd_data.variables['SPD'][:,:,1,:]),1)
 
 # PLOT SPD
 
@@ -115,8 +113,6 @@ for b in range(nbins):
 
 	fig_name = fig_dir + 'zonal_SPD_bin%i' % (b+1)
 	plt.savefig(fig_name)
-	
-	plt.close()
 
 # compare contributions across the bins
 
@@ -173,9 +169,7 @@ for c in range(ncols):
 fig_name = fig_dir + 'contribution'
 plt.savefig(fig_name)
 
-plt.close()
-
-#plt.show()
+plt.show()
 
 ################################################################
 
@@ -191,7 +185,7 @@ SPD[0,0,:,:,:] = np.transpose(spd_data.variables['SPD'][:nt,:,:])
 
 file_name = home_dir + '/STATS/SPD/KINEMATIC/kinematic_bottom.nc'
 spd_data = Dataset(file_name,'r')
-SPD[0,1,:,:,:] = np.transpose(spd_data.variables['SPD'][:nt,:,:])
+SPD[0,1,:,:,:] = np.transpose(spd_data.variables['SPD'][:n,:,:])
 
 file_name = home_dir + '/STATS/SPD/KINEMATIC/kinematic_top_2A.nc'
 spd_data = Dataset(file_name,'r')
@@ -199,7 +193,7 @@ SPD[1,0,:,:,:] = np.transpose(spd_data.variables['SPD'][:nt,:,:])
 
 file_name = home_dir + '/STATS/SPD/KINEMATIC/kinematic_bottom_2A.nc'
 spd_data = Dataset(file_name,'r')
-SPD[1,1,:,:,:] = np.transpose(spd_data.variables['SPD'][:nt,:,:])
+SPD[1,1,:,:,:] = np.transpose(spd_data.variables['SPD'][:n,:,:])
 
 file_name = home_dir + '/STATS/SPD/KINEMATIC/kinematic_top_halfA.nc'
 spd_data = Dataset(file_name,'r')
@@ -207,7 +201,7 @@ SPD[2,0,:,:,:] = np.transpose(spd_data.variables['SPD'][:nt,:,:])
 
 file_name = home_dir + '/STATS/SPD/KINEMATIC/kinematic_bottom_halfA.nc'
 spd_data = Dataset(file_name,'r')
-SPD[2,1,:,:,:] = np.transpose(spd_data.variables['SPD'][:nt,:,:])
+SPD[2,1,:,:,:] = np.transpose(spd_data.variables['SPD'][:n,:,:])
 
 for b in range(nbins):
 	ax = spd_grid_plot(left_space,right_space,bottom_space,top_space,ver_space,hor_space)
@@ -253,8 +247,6 @@ for b in range(nbins):
 
 	fig_name = fig_dir + 'amplitude_SPD_bin%i' % (b+1)
 	plt.savefig(fig_name)
-	
-	plt.close()
 
 
 

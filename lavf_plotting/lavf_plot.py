@@ -137,12 +137,15 @@ for b in range(nbins):
 	
 # WRITE THETA TO FILE
 
-file_name = home_dir + '/STATS/THETA/theta.nc'
+file_name = home_dir + '/STATS/THETA/theta-1.nc'
 theta_data = Dataset(file_name,'w',format='NETCDF4_CLASSIC')
 theta_data.createDimension('Bin',nbins)
 theta_data.createDimension('Dimension',2)
 theta_data.createDimension('Layer',2)
-theta = theta_data.createVariable('Theta-1',np.float64,('Bin','Dimension','Layer',))
+theta_var = theta_data.createVariable('Theta',np.float64,('Bin','Dimension','Layer',))
+theta_var[:] = theta 
+print(theta_var)
+print(theta_var[:])
 
 
 
