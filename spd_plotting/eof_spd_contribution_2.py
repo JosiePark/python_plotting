@@ -13,7 +13,7 @@ plt.rcParams.update({'font.size': 8})
 
 # INPUT PARAMETERS #
 
-regime = 1
+regime = 2
 
 home_dir = '/media/josiepark/Seagate Expansion Drive/PhD/DATA/Saves/%i' % regime
 fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/%i/STATS/SPD/EOF/' % regime
@@ -47,14 +47,19 @@ for b in range(nbins):
 	SPD[2,:,b,:,:,:] = tmp
 
 
-ave_SPD = np.mean(SPD,3)
-			
-# PLOT SPD
 
-t = np.arange(0,nt,1)
+ave_SPD = np.mean(SPD,3)
+
+# compare contributions across the bins
+
+# READ TIME SCALE #
+
+file_name = home_dir + '/STATS/TSCALE/pseudo_MEAN_TSCALE.nc'
+tscale_data = Dataset(file_name,'r')
+tscale = np.transpose(tscale_data.variables['Time Scale'][:])
 
 right_space = 0.02
-left_space = 0.09
+left_space = 0.08
 top_space = 0.05
 bottom_space = 0.08
 hor_space = 0.06
@@ -63,38 +68,55 @@ nrows = 2
 ncols = 2
 fig_width = 8.27
 
+ax = square_grid_plot(nrows,ncols,left_space,right_space,bottom_space,top_space,hor_space,ver_space,fig_width)
 
-for b in range(nbins):
-	ax = spd_grid_plot(left_space,right_space,bottom_space,top_space,hor_space,ver_space)
-	k=0
-	for i in range(ncols):
-		for j in range(nrows):
-			ax[k].plot(t,ave_SPD[0,i,b,j,:],label = 'Eddy')
-			ax[k].plot(t,ave_SPD[1,i,b,j,:],label = 'EOFs 1-10')
-			ax[k].plot(t,ave_SPD[2,i,b,j,:],label = 'EOFs 1-20')
-			
-			if (i == 0 and j == 0):
-				ax[k].legend(loc = 'upper left')
-			ax[k].ticklabel_format(style = 'sci',axis = 'y',scilimits=(0,0))
-			ax[k].grid()
-			
-			if (j==1):
-				ax[k].set_xlabel('Time (days)')
-			else:
-				if (i==0):
-					ax[k].set_title('D$_x$ (km s $^{-1}$)')
-				else:
-					ax[k].set_title('D$_y$ (km s $^{-1}$)')
-			
-			if (i==0):
-				if (j == 1):
-					ax[k].set_ylabel('Bottom Layer')
-				else:
-					ax[k].set_ylabel('Top Layer')
-			k+=1
-	fig_name = fig_dir + 'SPD_full_bin%i' % (b+1)
-	plt.savefig(fig_name)
+contribution = np.zeros((2,2,nbins,2))
 
+for l in range(2):
+	for b in range(nbins):
+		if int(tscale[b,l]) == 1000:
+			T = nt-1
+		else:
+			T = int(tscale[b,l])-1
+		for i in range(2):
+			contribution[i,:,b,l] = (ave_SPD[i+1,:,b,l,T] - ave_SPD[0,:,b,l,T])/ave_SPD[0,:,b,l,T]
+
+
+
+k = 0
+
+for c in range(ncols):
+	for r in range(nrows):
+		line = []
+		ax[k].plot(contribution[0,c,:,r],np.linspace(1,nbins,nbins),label = 'EOFs 1-10')
+		ax[k].plot(contribution[1,c,:,r],np.linspace(1,nbins,nbins),label = 'EOFs 1-20')
+
+		
+		ax[k].set_xlim([-2,2])
+		if (r == 1):
+			ax[k].set_xlabel('Contribution to SPD')
+			if (c == 0):
+				ax[k].set_ylabel('Bottom Layer')
+		if (r == 0) and (c == 0):
+			ax[k].set_ylabel('Top Layer')
+			ax[k].set_title('Zonal')
+			ax[k].legend(loc = 'upper left')
+		if (r == 0) and (c == 1):
+			ax[k].set_title('Meridional')
+		if (c==1):
+			ax[k].set_yticklabels([])
+		if (r == 0):
+			ax[k].set_xticklabels([])
+		ax[k].grid()
+		
+	
+
+		k+=1
+
+fig_name = fig_dir + 'full_EOF_contribution'
+plt.savefig(fig_name)
+
+plt.show()
 
 
 	

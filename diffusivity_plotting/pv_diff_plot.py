@@ -14,10 +14,10 @@ plt.rcParams.update({'font.size': 8})
 
 # INPUT PARAMETERS #
 
-regime = 1
+regime = 2
 
 home_dir = '/media/josiepark/Seagate Expansion Drive/PhD/DATA/Saves/%i/' % regime
-fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/%i/STATS/ALPHA/' % regime
+fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/%i/STATS/DIFFUSIVITY/' % regime
 nbins = 10
 nt = 1000
 
@@ -27,25 +27,20 @@ file_name = home_dir + 'QG/QG_ave.nc'
 psi_data = Dataset(file_name,'r')
 psi_ave = np.transpose(psi_data.variables['Time-averaged Stream Function'][:])
 
-# READ ALPHA
+# READ DIFFUSIVITY
 
-alpha = np.zeros((3,2,nbins,2))
+K = np.zeros((2,nbins))
 
-for i in range(3):
-	file_name = home_dir + 'STATS/ALPHA/full_MEAN_ALPHA.nc'
-	alpha_data = Dataset(file_name,'r')
-	tmp = np.transpose(alpha_data.variables['Alpha'][:])
-	alpha[0,:,:,:] = tmp
+file_name = home_dir + 'STATS/DIFFUSIVITY/full_MEAN_DIFF.nc'
+diff_data = Dataset(file_name,'r')
+tmp = np.transpose(diff_data.variables['Diffusivity'][0,:,1])
+K[0,:] = tmp
+
+file_name = home_dir + 'STATS/DIFFUSIVITY/test_full_PVDISP_MEAN_DIFF.nc'
+diff_data = Dataset(file_name,'r')
+tmp = np.transpose(diff_data.variables['Diffusivity'][:])
+K[1,:] = tmp
 	
-	file_name = home_dir + 'STATS/ALPHA/eddy_MEAN_ALPHA.nc'
-	alpha_data = Dataset(file_name,'r')
-	tmp = np.transpose(alpha_data.variables['Alpha'][:])
-	alpha[1,:,:,:] = tmp
-	
-	file_name = home_dir + 'STATS/ALPHA/pseudo_MEAN_ALPHA.nc'
-	alpha_data = Dataset(file_name,'r')
-	tmp = np.transpose(alpha_data.variables['Alpha'][:])
-	alpha[2,:,:,:] = tmp
 
 # PLOT ALPHA SUPERIMPOSED ON THE TIME-AVERAGED STREAM FUNCTION
 
@@ -58,42 +53,52 @@ bin_centres = []
 bin_centres.append(bin_width/2.)
 for b in range(nbins-1):
 	bin_centres.append(bin_centres[b]+bin_width)
+	
+# READ PV BIN WIDTHS # 
 
-nrows = 2
-ncols = 2	
-hor_space = .03
-ver_space = 0.04
-top_space = .05
-bottom_space = .051
-left_space = .08
-right_space = .02
+file_name = home_dir + '/TRAJ/PV_BINS/test_bin_width.nc'
+bin_data = Dataset(file_name,'r')
+bin_width = np.mean(bin_data.variables['Release Bin Width'][:],0)
+
+bin_boundary = np.zeros((nbins+1))
+for b in range(nbins):
+	bin_boundary[b+1] = bin_boundary[b] + bin_width[b]
+pv_bin_centres = .5*(bin_boundary[:-1]+bin_boundary[1:])
+print(pv_bin_centres)
+
+# CALCULATE BIN CENTRES FOR PV BINS #
+	
+right_space = 0.02
+left_space = 0.1
+top_space = 0.08
+bottom_space = 0.08
+hor_space = 0.07
+ver_space = 0.06
+nrows = 1
+ncols = 1
 fig_width = 8.27
-
-
 
 k = 0
 ax = square_grid_plot(nrows,ncols,left_space,right_space,bottom_space,top_space,hor_space,ver_space,fig_width)
 
 for i in range(ncols):
-	for j in range(nrows):
-		
+	for j in range(nrows):	
 		ax[k].pcolor(xx,yy,psi_ave[:,:,j],alpha=0.5,cmap = cm.gray)
 		ax_K = ax[k].twiny()
-		ax_K.plot(alpha[0,i,:,j],bin_centres,'b-',label='Full')
-		ax_K.plot(alpha[1,i,:,j],bin_centres,'g--',label='Eddy')
-		ax_K.plot(alpha[2,i,:,j],bin_centres,'r-.',label='FFE')
+		ax_K.plot(K[0,:],bin_centres,'b-',label='Full')
+		ax_K.plot(K[1,:],pv_bin_centres,'g--',label='PV Mapped')
 		if (j == 0):
 			if (i == 0):
-				ax_K.set_xlabel('alpha$_x$')
+				ax_K.set_xlabel('K$_y$')
 			else:
-				ax_K.set_xlabel('alpha$_y$')
+				ax_K.set_xlabel('K$_y$')
 			ax[k].set_xticklabels([])
 		else:
-		
 			ax[k].set_xlabel('X (km)')
-		ax_K.set_xlim(0,3)
+		#ax_K.set_xlim(0,3)
 		ax[k].set_ylim(0,520)
 		ax[k].set_xlim(0,520)
+		#ax_K.ticklabel_format(style = 'sci',axis = 'x',scilimits=(0,0))
 		if (i==0):
 			ax[k].set_ylabel('Y (km)')
 		else:
@@ -104,10 +109,8 @@ for i in range(ncols):
 		ax_K.grid()
 		k+=1
 
-fig_name = fig_dir + 'alpha_uniform'
+fig_name = fig_dir + 'K_PV'
 plt.savefig(fig_name)
-
-
 
 	
 

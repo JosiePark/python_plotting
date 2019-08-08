@@ -14,7 +14,7 @@ plt.rcParams.update({'font.size': 8})
 
 # INPUT PARAMETERS #
 
-regime = 1
+regime = 2
 
 home_dir = '/media/josiepark/Seagate Expansion Drive/PhD/DATA/Saves/%i' % regime
 fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/%i/STATS/SPD/KINEMATIC/' % regime
@@ -34,15 +34,18 @@ SPD[0,:,:,:] = np.transpose(spd_data.variables['SPD'][:nt,:,:])
 
 file_name = home_dir + '/STATS/SPD/KINEMATIC/kinematic_zonalRossby_top.nc'
 spd_data = Dataset(file_name,'r')
+print(spd_data)
 U0_SPD[0,:,:,:] = np.transpose(spd_data.variables['SPD'][:nt,:,:])
 
 
 file_name = home_dir + '/STATS/SPD/KINEMATIC/kinematic_bottom.nc'
 spd_data = Dataset(file_name,'r')
+print(spd_data)
 SPD[1,:,:,:] = np.transpose(spd_data.variables['SPD'][:nt,:,:])
 
 file_name = home_dir + '/STATS/SPD/KINEMATIC/kinematic_zonalRossby_bottom.nc'
 spd_data = Dataset(file_name,'r')
+print(spd_data)
 U0_SPD[1,:,:,:] = np.transpose(spd_data.variables['SPD'][:nt,:,:])
 
 

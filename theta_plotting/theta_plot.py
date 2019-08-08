@@ -17,7 +17,7 @@ plt.rcParams.update({'font.size': 8})
 regime = 1
 
 home_dir = '/media/josiepark/Seagate Expansion Drive/PhD/DATA/Saves/%i/' % regime
-fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/%i/STATS/ALPHA/' % regime
+fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/%i/STATS/THETA/' % regime
 nbins = 10
 nt = 1000
 
@@ -29,23 +29,15 @@ psi_ave = np.transpose(psi_data.variables['Time-averaged Stream Function'][:])
 
 # READ ALPHA
 
-alpha = np.zeros((3,2,nbins,2))
+alpha = np.zeros((2,2,nbins))
 
-for i in range(3):
-	file_name = home_dir + 'STATS/ALPHA/full_MEAN_ALPHA.nc'
-	alpha_data = Dataset(file_name,'r')
-	tmp = np.transpose(alpha_data.variables['Alpha'][:])
-	alpha[0,:,:,:] = tmp
+file_name = home_dir + 'STATS/THETA/pseudo_theta_osc.nc'
+alpha_data = Dataset(file_name,'r')
+tmp = np.transpose(alpha_data.variables['Theta'][:])
+print(tmp.shape)
+print(alpha_data)
+alpha[:,:,:] = tmp
 	
-	file_name = home_dir + 'STATS/ALPHA/eddy_MEAN_ALPHA.nc'
-	alpha_data = Dataset(file_name,'r')
-	tmp = np.transpose(alpha_data.variables['Alpha'][:])
-	alpha[1,:,:,:] = tmp
-	
-	file_name = home_dir + 'STATS/ALPHA/pseudo_MEAN_ALPHA.nc'
-	alpha_data = Dataset(file_name,'r')
-	tmp = np.transpose(alpha_data.variables['Alpha'][:])
-	alpha[2,:,:,:] = tmp
 
 # PLOT ALPHA SUPERIMPOSED ON THE TIME-AVERAGED STREAM FUNCTION
 
@@ -79,19 +71,17 @@ for i in range(ncols):
 		
 		ax[k].pcolor(xx,yy,psi_ave[:,:,j],alpha=0.5,cmap = cm.gray)
 		ax_K = ax[k].twiny()
-		ax_K.plot(alpha[0,i,:,j],bin_centres,'b-',label='Full')
-		ax_K.plot(alpha[1,i,:,j],bin_centres,'g--',label='Eddy')
-		ax_K.plot(alpha[2,i,:,j],bin_centres,'r-.',label='FFE')
+		ax_K.plot(alpha[j,i,:],bin_centres,'b-')
 		if (j == 0):
 			if (i == 0):
-				ax_K.set_xlabel('alpha$_x$')
+				ax_K.set_xlabel('theta$_x$')
 			else:
-				ax_K.set_xlabel('alpha$_y$')
+				ax_K.set_xlabel('theta$_y$')
 			ax[k].set_xticklabels([])
 		else:
 		
 			ax[k].set_xlabel('X (km)')
-		ax_K.set_xlim(0,3)
+		ax_K.set_xlim(0,250)
 		ax[k].set_ylim(0,520)
 		ax[k].set_xlim(0,520)
 		if (i==0):
@@ -99,12 +89,12 @@ for i in range(ncols):
 		else:
 			ax[k].set_yticklabels([])
 		
-		if (i == 0 and j == 0):
-			ax_K.legend(loc = 'upper left')
+		#if (i == 0 and j == 0):
+		#	ax_K.legend(loc = 'upper left')
 		ax_K.grid()
 		k+=1
 
-fig_name = fig_dir + 'alpha_uniform'
+fig_name = fig_dir + 'theta_uniform'
 plt.savefig(fig_name)
 
 
@@ -112,4 +102,4 @@ plt.savefig(fig_name)
 	
 
 
-
+                             

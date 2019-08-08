@@ -13,7 +13,7 @@ from grid_plot import square_grid_plot, spd_grid_plot
 
 # INPUT PARAMETERS #
 
-regime = 1
+regime = 2
 
 home_dir = '/media/josiepark/Seagate Expansion Drive/PhD/DATA/Saves/%i' % regime
 fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/%i/STATS/LAVF/UNIFORM/' % regime
@@ -89,6 +89,7 @@ def func_y(x,a,b):
 	return np.exp(-a*x)*(np.cos(b*x))
 	
 theta = np.zeros((nbins,2,2))
+omega = np.zeros((nbins,2,2))
 
 
 for b in range(nbins):
@@ -98,15 +99,20 @@ for b in range(nbins):
 		for j in range(nrows):
 			if i == 0:
 				popt, pcov = curve_fit(func_x,t,R[2,b,i,j,:])
+				print('coeffs=',popt)
 				ax[k].plot(t,func_x(t,*popt),'r-.',label = "Fitted Curve")
-				theta[b,i,j] = 1./popt
+				theta[b,i,j] = 1./popt[0]
+				omega[b,i,j] = popt[0]
 			else:
 				popt, pcov = curve_fit(func_y,t,R[2,b,i,j,:])
+				print('coeffs=',popt)
 				ax[k].plot(t,func_y(t,*popt),'r-.',label = "Fitted Curve")
-				for tau in t:
-					if func_y(tau,*popt) <= np.exp(-1):
-						theta[b,i,j] = tau
-						break
+				theta[b,i,j] = 1./popt[0]
+				omega[b,i,j] = popt[1]
+				#for tau in t:
+				#	if func_y(tau,*popt) <= np.exp(-1):
+				#		theta[b,i,j] = tau
+				#		break
 				
 
 			ax[k].plot(t,R[2,b,i,j,:],'b-',label = "Original FFE Curve")
@@ -130,22 +136,29 @@ for b in range(nbins):
 	ax[1].set_ylabel('Bottom Layer') 
 	ax[0].set_title('R$_x$ (km s $^{-1}$)')
 	ax[2].set_title('R$_y$ (km s $^{-1}$)')
-	fig_name = fig_dir + 'fitted_R_bin%i' % (b+1)
+	fig_name = fig_dir + 'fitted_pseudo_osc_R_bin%i' % (b+1)
 	plt.savefig(fig_name)
 	plt.close()
 	
 	
 # WRITE THETA TO FILE
 
-file_name = home_dir + '/STATS/THETA/theta-1.nc'
+file_name = home_dir + '/STATS/THETA/pseudo_theta_osc.nc'
 theta_data = Dataset(file_name,'w',format='NETCDF4_CLASSIC')
 theta_data.createDimension('Bin',nbins)
 theta_data.createDimension('Dimension',2)
 theta_data.createDimension('Layer',2)
 theta_var = theta_data.createVariable('Theta',np.float64,('Bin','Dimension','Layer',))
 theta_var[:] = theta 
-print(theta_var)
-print(theta_var[:])
+
+file_name = home_dir + '/STATS/THETA/omega.nc'
+omega_data = Dataset(file_name,'w',format = 'NETCDF4_CLASSIC')
+omega_data.createDimension('Bin',nbins)
+omega_data.createDimension('Dimension',2)
+omega_data.createDimension('Layer',2)
+omega_var = omega_data.createVariable('Omega',np.float64,('Bin','Dimension','Layer'))
+omega_var[:] = omega
+
 
 
 

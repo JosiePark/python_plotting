@@ -10,9 +10,11 @@ import sys
 sys.path.insert(0,'/home/josiepark/Project/PhD/CODE/PYTHON_PLOTTING/functions/')
 from grid_plot import square_grid_plot
 
+plt.rcParams.update({'font.size': 8})
+
 # INPUT PARAMETERS #
 
-regime = 2
+regime = 1
 
 home_dir = '/media/josiepark/Seagate Expansion Drive/PhD/DATA/Saves/%i/' % regime
 fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/%i/STATS/TSCALE/' % regime
@@ -87,8 +89,8 @@ for i in range(ncols):
 	ax_alpha.set_xlabel('Time Scale (Days)')
 	ax[i].set_xlabel('X (km)')
 	
-		
-	ax_alpha.legend()
+	if (i == 0):
+		ax_alpha.legend()
 
 fig_name = fig_dir + 'tscale_uniform'
 plt.savefig(fig_name)	

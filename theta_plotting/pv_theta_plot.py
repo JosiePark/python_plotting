@@ -17,7 +17,7 @@ plt.rcParams.update({'font.size': 8})
 regime = 1
 
 home_dir = '/media/josiepark/Seagate Expansion Drive/PhD/DATA/Saves/%i/' % regime
-fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/%i/STATS/ALPHA/' % regime
+fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/%i/STATS/THETA/' % regime
 nbins = 10
 nt = 1000
 
@@ -29,23 +29,24 @@ psi_ave = np.transpose(psi_data.variables['Time-averaged Stream Function'][:])
 
 # READ ALPHA
 
-alpha = np.zeros((3,2,nbins,2))
+alpha = np.zeros((2,nbins))
 
-for i in range(3):
-	file_name = home_dir + 'STATS/ALPHA/full_MEAN_ALPHA.nc'
-	alpha_data = Dataset(file_name,'r')
-	tmp = np.transpose(alpha_data.variables['Alpha'][:])
-	alpha[0,:,:,:] = tmp
+file_name = home_dir + 'STATS/THETA/theta.nc'
+alpha_data = Dataset(file_name,'r')
+tmp = np.transpose(alpha_data.variables['Theta'][:,1,0])
+alpha[0,:] = tmp
 	
-	file_name = home_dir + 'STATS/ALPHA/eddy_MEAN_ALPHA.nc'
-	alpha_data = Dataset(file_name,'r')
-	tmp = np.transpose(alpha_data.variables['Alpha'][:])
-	alpha[1,:,:,:] = tmp
+file_name = home_dir + 'STATS/THETA/theta_PV.nc'
+alpha_data = Dataset(file_name,'r')
+tmp = np.transpose(alpha_data.variables['Theta'][:])
+alpha[1,:] = tmp
 	
-	file_name = home_dir + 'STATS/ALPHA/pseudo_MEAN_ALPHA.nc'
-	alpha_data = Dataset(file_name,'r')
-	tmp = np.transpose(alpha_data.variables['Alpha'][:])
-	alpha[2,:,:,:] = tmp
+# READ PV BIN WIDTHS
+
+file_name = home_dir + 'TRAJ/PV_BINS/test_bin_width.nc'
+width_data = Dataset(file_name,'r')
+pvbin_width = np.transpose(width_data.variables['Bin Width'][:])
+	
 
 # PLOT ALPHA SUPERIMPOSED ON THE TIME-AVERAGED STREAM FUNCTION
 
@@ -58,9 +59,18 @@ bin_centres = []
 bin_centres.append(bin_width/2.)
 for b in range(nbins-1):
 	bin_centres.append(bin_centres[b]+bin_width)
+	
+# CALCULATE PV BINS
 
-nrows = 2
-ncols = 2	
+pvbin_centres = []
+pvbin_centres.append(pvbin_width[0]/2.)
+for b in range(nbins-1):
+	pvbin_centres.append(pvbin_centres[b]+(pvbin_width[b] + pvbin_width[b+1])/2.)
+
+print(pvbin_centres)
+
+nrows = 1
+ncols = 1	
 hor_space = .03
 ver_space = 0.04
 top_space = .05
@@ -79,33 +89,22 @@ for i in range(ncols):
 		
 		ax[k].pcolor(xx,yy,psi_ave[:,:,j],alpha=0.5,cmap = cm.gray)
 		ax_K = ax[k].twiny()
-		ax_K.plot(alpha[0,i,:,j],bin_centres,'b-',label='Full')
-		ax_K.plot(alpha[1,i,:,j],bin_centres,'g--',label='Eddy')
-		ax_K.plot(alpha[2,i,:,j],bin_centres,'r-.',label='FFE')
-		if (j == 0):
-			if (i == 0):
-				ax_K.set_xlabel('alpha$_x$')
-			else:
-				ax_K.set_xlabel('alpha$_y$')
-			ax[k].set_xticklabels([])
-		else:
-		
-			ax[k].set_xlabel('X (km)')
-		ax_K.set_xlim(0,3)
+		ax_K.plot(alpha[0,:],bin_centres,'b-',label='Full')
+		ax_K.plot(alpha[1,:],pvbin_centres,'g--',label='PV Mapped')
+		ax_K.set_xlabel('theta$_y$ (days)')
+		ax[k].set_xlabel('X (km)')
+		ax_K.set_xlim(0,20)
 		ax[k].set_ylim(0,520)
 		ax[k].set_xlim(0,520)
-		if (i==0):
-			ax[k].set_ylabel('Y (km)')
-		else:
-			ax[k].set_yticklabels([])
-		
-		if (i == 0 and j == 0):
-			ax_K.legend(loc = 'upper left')
+		ax[k].set_ylabel('Y (km)')
+
+		ax_K.legend(loc = 'upper left')
 		ax_K.grid()
 		k+=1
 
-fig_name = fig_dir + 'alpha_uniform'
+fig_name = fig_dir + 'theta_PV'
 plt.savefig(fig_name)
+print(alpha[1,:])
 
 
 
