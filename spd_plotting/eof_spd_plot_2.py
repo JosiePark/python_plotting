@@ -13,7 +13,7 @@ plt.rcParams.update({'font.size': 8})
 
 # INPUT PARAMETERS #
 
-regime = 1
+regime = 2
 
 home_dir = '/media/josiepark/Seagate Expansion Drive/PhD/DATA/Saves/%i' % regime
 fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/%i/STATS/SPD/EOF/' % regime
@@ -69,11 +69,11 @@ for b in range(nbins):
 	k=0
 	for i in range(ncols):
 		for j in range(nrows):
-			ax[k].plot(t,ave_SPD[0,i,b,j,:],label = 'Eddy')
-			ax[k].plot(t,ave_SPD[1,i,b,j,:],label = 'EOFs 1-10')
-			ax[k].plot(t,ave_SPD[2,i,b,j,:],label = 'EOFs 1-20')
+			ax[k].plot(t,ave_SPD[0,i,b,j,:],'k',label = 'Eddy')
+			ax[k].plot(t,ave_SPD[1,i,b,j,:],'b-.',label = 'EOFs 1-10')
+			ax[k].plot(t,ave_SPD[2,i,b,j,:],'r--',label = 'EOFs 1-20')
 			
-			if (i == 0 and j == 0):
+			if (i == 0 and j == 0 and (b == 0 or b == 5)):
 				ax[k].legend(loc = 'upper left')
 			ax[k].ticklabel_format(style = 'sci',axis = 'y',scilimits=(0,0))
 			ax[k].grid()

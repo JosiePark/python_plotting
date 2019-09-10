@@ -32,9 +32,10 @@ psi_ave = np.transpose(psi_data.variables['Time-averaged Stream Function'][:])
 alpha = np.zeros((2,nbins))
 
 for i in range(2):
-	file_name = home_dir + 'STATS/ALPHA/full_MEAN_ALPHA.nc'
+	file_name = home_dir + 'STATS/ALPHA/pseudo_new_MEAN_ALPHA.nc'
 	alpha_data = Dataset(file_name,'r')
 	tmp = np.transpose(alpha_data.variables['Alpha'][0,:,1])
+	print(alpha_data)
 	alpha[0,:] = tmp
 	
 	file_name = home_dir + 'STATS/ALPHA/test_full_new_PVDISP_MEAN_ALPHA.nc'
@@ -44,7 +45,7 @@ for i in range(2):
 	
 # READ PV BIN WIDTHS
 
-file_name = home_dir + 'TRAJ/PV_BINS/bin_width.nc'
+file_name = home_dir + 'TRAJ/PV_BINS/test_bin_width.nc'
 width_data = Dataset(file_name,'r')
 pvbin_width = np.transpose(width_data.variables['Bin Width'][:])
 	
@@ -71,14 +72,14 @@ for b in range(nbins-1):
 print(pvbin_centres)
 
 nrows = 1
-ncols = 1	
+ncols = 1
 hor_space = .03
-ver_space = 0.04
-top_space = .05
-bottom_space = .051
-left_space = .08
-right_space = .02
-fig_width = 8.27
+ver_space = 0.
+top_space = .12
+bottom_space = .15
+left_space = .15
+right_space = .04
+fig_width = 8.27/2.
 
 
 
@@ -90,8 +91,8 @@ for i in range(ncols):
 		
 		ax[k].pcolor(xx,yy,psi_ave[:,:,j],alpha=0.5,cmap = cm.gray)
 		ax_K = ax[k].twiny()
-		ax_K.plot(alpha[0,:],bin_centres,'b-',label='Full')
-		ax_K.plot(alpha[1,:],pvbin_centres,'g--',label='PV Mapped')
+		ax_K.plot(alpha[0,:],bin_centres,'b',label='Full')
+		ax_K.plot(alpha[1,:],pvbin_centres,'r-.',label='PV Mapped')
 		ax_K.set_xlabel('alpha$_y$')
 		ax[k].set_xlabel('X (km)')
 		ax_K.set_xlim(0,3)
@@ -103,7 +104,7 @@ for i in range(ncols):
 		ax_K.grid()
 		k+=1
 
-fig_name = fig_dir + 'alpha_PV'
+fig_name = fig_dir + 'new_alpha_PV'
 plt.savefig(fig_name)
 print(alpha[1,:])
 

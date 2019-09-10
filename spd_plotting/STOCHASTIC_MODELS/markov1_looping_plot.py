@@ -5,54 +5,40 @@ from netCDF4 import Dataset
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
-
 import sys
 sys.path.insert(0,'/home/josiepark/Project/PhD/CODE/PYTHON_PLOTTING/functions/')
-from grid_plot import square_grid_plot, spd_grid_plot
+from grid_plot import spd_grid_plot
 
 # INPUT PARAMETERS #
 
-regime = 1
+regime = 2
 
 home_dir = '/media/josiepark/Seagate Expansion Drive/PhD/DATA/Saves/%i' % regime
-fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/%i/STATS/SPD/UNIFORM/' % regime
+fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/%i/STATS/SPD/STOCHASTIC_MODELS/MARKOV1/' % regime
 nbins = 10
-nrel = 9
 nt = 1000
 
 # READ SPD #
 
-SPD = np.zeros((3,2,nbins,nrel,2,nt))
+SPD = np.zeros((3,nbins,2,2,nt))
 
 for b in range(nbins):
 	file_name = home_dir + '/STATS/SPD/FULL/full_uniform_SPD_bin%i.nc' % (b+1)
 	spd_data = Dataset(file_name,'r')
 	tmp = np.transpose(spd_data.variables['SPD'][:])
-	SPD[0,:,b,:,:,:] = tmp
+	SPD[0,b,:,:,:] = np.mean(tmp[:,:,:,:nt],1)
 	
-	file_name = home_dir + '/STATS/SPD/EDDY/eddy_uniform_SPD_bin%i.nc' % (b+1)
+	file_name = home_dir + '/STATS/SPD/FINAL_MARKOV1/DIFF/diff_markov1_SPD_bin%i.nc' % (b+1)
 	spd_data = Dataset(file_name,'r')
 	tmp = np.transpose(spd_data.variables['SPD'][:])
-	SPD[1,:,b,:,:,:] = tmp
+	SPD[1,b,:,:,:] = tmp[:,:,:nt]
 
-	file_name = home_dir + '/STATS/SPD/PSEUDO/pseudo_uniform_SPD_bin%i.nc' % (b+1)
+	file_name = home_dir + '/STATS/SPD/FINAL_MARKOV1/LOOPING/looping_markov1_SPD_bin%i.nc' % (b+1)
 	spd_data = Dataset(file_name,'r')
 	tmp = np.transpose(spd_data.variables['SPD'][:])
-	SPD[2,:,b,:,:,:] = tmp
-
-ave_SPD = np.mean(SPD,3)
-
-# READ TSCALE
-
-file_name = home_dir + '/STATS/TSCALE/pseudo_MEAN_TSCALE.nc'
-tscale_data = Dataset(file_name,'r')
-tscale = np.transpose(tscale_data.variables['Time Scale'][:])
-print(tscale_data)
-
-file_name = home_dir + '/STATS/THETA/pseudo_theta_osc.nc'
-theta_data = Dataset(file_name,'r')
-theta = theta_data.variables['Theta'][:]
-print(theta_data)
+	SPD[2,b,:,:,:] = tmp[:,:,:nt]
+	
+	#exit()
 			
 # PLOT SPD
 
@@ -73,9 +59,9 @@ for b in range(nbins):
 	k=0
 	for i in range(ncols):
 		for j in range(nrows):
-			ax[k].plot(t,ave_SPD[0,i,b,j,:],'b-',label = 'Full')
-			ax[k].plot(t,ave_SPD[1,i,b,j,:],'g--',label = 'Eddy')
-			ax[k].plot(t,ave_SPD[2,i,b,j,:],'r-.',label = 'FFE')
+			ax[k].plot(t,SPD[0,b,i,j,:],'b-',label = 'Full')
+			ax[k].plot(t,SPD[1,b,i,j,:],'g--',label = 'Markov1')
+			ax[k].plot(t,SPD[2,b,i,j,:],'r-.',label = 'Looping Markov1')
 			#ax[k].axvline(x = tscale[b,j],color = 'k',label = 'T')
 			#ax[k].axvline(x = theta[b,i,j], color = 'k', linestyle = '-.',label = 'T_L')
 
@@ -91,7 +77,7 @@ for b in range(nbins):
 	else:
 		ax[0].set_ylim([0,1.e8])
 		ax[1].set_ylim([0,1.e7])
-		ax[2].set_ylim([0,1.e5])
+		ax[2].set_ylim([0,2.e4])
 		ax[3].set_ylim([0,2.e4])
 	
 	if (b == 0 or b == 5):
@@ -102,7 +88,7 @@ for b in range(nbins):
 	ax[1].set_ylabel('Bottom Layer') 
 	ax[0].set_title('D$_x$ (km$^{2}$)')
 	ax[2].set_title('D$_y$ (km$^{2}$)')
-	fig_name = fig_dir + 'SPD_bin%i' % (b+1)
+	fig_name = fig_dir + 'new_looping_markov1_SPD_bin%i' % (b+1)
 	plt.savefig(fig_name)
 	
 for b in range(nbins):
@@ -110,9 +96,9 @@ for b in range(nbins):
 	k=0
 	for i in range(ncols):
 		for j in range(nrows):
-			ax[k].loglog(t,ave_SPD[0,i,b,j,:],'b-',label = 'Full')
-			ax[k].loglog(t,ave_SPD[1,i,b,j,:],'g--',label = 'Eddy')
-			ax[k].loglog(t,ave_SPD[2,i,b,j,:],'r-.',label = 'FFE')
+			ax[k].loglog(t,SPD[0,b,i,j,:],'b-',label = 'Full')
+			ax[k].loglog(t,SPD[1,b,i,j,:],'g--',label = 'Markov1')
+			ax[k].loglog(t,SPD[2,b,i,j,:],'r-.',label = 'Looping Markov1')
 			ax[k].loglog(t[:100],t[:100]**2,'k--',label = 'Ballisitc')
 			ax[k].loglog(t[100:],t[100:],'k-.',label = 'Diffusive')
 			#ax[k].axvline(x = tscale[b,j],color = 'k',label = 'T')
@@ -142,10 +128,8 @@ for b in range(nbins):
 	ax[1].set_ylabel('Bottom Layer') 
 	ax[0].set_title('D$_x$ (km$^{2}$)')
 	ax[2].set_title('D$_y$ (km$^{2}$)')
-	fig_name = fig_dir + 'logSPD_theta_bin%i' % (b+1)
+	fig_name = fig_dir + 'new_looping_markov1_logSPD_bin%i' % (b+1)
 	plt.savefig(fig_name)
-
-	
 	
 
 

@@ -8,16 +8,16 @@ import matplotlib.cm as cm
 
 import sys
 sys.path.insert(0,'/home/josiepark/Project/PhD/CODE/PYTHON_PLOTTING/functions/')
-from grid_plot import square_grid_plot,a4_plot,spd_grid_plot
+from grid_plot import square_grid_plot
 
 plt.rcParams.update({'font.size': 8})
 
 # INPUT PARAMETERS #
 
-regime = 2
+regime = 1
 
 home_dir = '/media/josiepark/Seagate Expansion Drive/PhD/DATA/Saves/%i/' % regime
-fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/%i/STATS/DIFFUSIVITY/' % regime
+fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/%i/STATS/TSCALE/' % regime
 nbins = 10
 nt = 1000
 
@@ -27,22 +27,20 @@ file_name = home_dir + 'QG/QG_ave.nc'
 psi_data = Dataset(file_name,'r')
 psi_ave = np.transpose(psi_data.variables['Time-averaged Stream Function'][:])
 
-# READ DIFFUSIVITY
+# READ ALPHA
 
-K = np.zeros((2,nbins))
+tscale = np.zeros((2,nbins))
 
-file_name = home_dir + 'STATS/DIFFUSIVITY/pseudo_new_DIFF.nc'
-diff_data = Dataset(file_name,'r')
-tmp = np.transpose(diff_data.variables['Diffusivity'][0,:,1])
-K[0,:] = tmp
-
-file_name = home_dir + 'STATS/DIFFUSIVITY/test_full_PVDISP_MEAN_DIFF.nc'
-diff_data = Dataset(file_name,'r')
-tmp = np.transpose(diff_data.variables['Diffusivity'][:])
-K[1,:] = tmp
-
-K = K/86400.
+for i in range(3):
+	file_name = home_dir + 'STATS/TSCALE/full_MEAN_TSCALE.nc'
+	tscale_data = Dataset(file_name,'r')
+	tmp = np.transpose(tscale_data.variables['Time Scale'][:])
+	tscale[0,:] = tmp[:,0]
 	
+	file_name = home_dir + 'STATS/TSCALE/test_full_PVDISP_MEAN_TSCALE.nc'
+	tscale_data = Dataset(file_name,'r')
+	tmp = np.transpose(tscale_data.variables['Time Scale'][:])
+	tscale[1,:] = tmp
 
 # PLOT ALPHA SUPERIMPOSED ON THE TIME-AVERAGED STREAM FUNCTION
 
@@ -56,7 +54,7 @@ bin_centres.append(bin_width/2.)
 for b in range(nbins-1):
 	bin_centres.append(bin_centres[b]+bin_width)
 	
-# READ PV BIN WIDTHS # 
+# READ PV BINS #
 
 file_name = home_dir + '/TRAJ/PV_BINS/test_bin_width.nc'
 bin_data = Dataset(file_name,'r')
@@ -68,8 +66,6 @@ for b in range(nbins):
 pv_bin_centres = .5*(bin_boundary[:-1]+bin_boundary[1:])
 print(pv_bin_centres)
 
-# CALCULATE BIN CENTRES FOR PV BINS #
-	
 nrows = 1
 ncols = 1
 hor_space = .03
@@ -80,41 +76,30 @@ left_space = .15
 right_space = .04
 fig_width = 8.27/2.
 
-k = 0
 ax = square_grid_plot(nrows,ncols,left_space,right_space,bottom_space,top_space,hor_space,ver_space,fig_width)
 
-K = K*(1000)**2
-
 for i in range(ncols):
-	for j in range(nrows):	
-		ax[k].pcolor(xx,yy,psi_ave[:,:,j],alpha=0.5,cmap = cm.gray)
-		ax_K = ax[k].twiny()
-		ax_K.plot(K[0,:],bin_centres,'b',label='Full')
-		ax_K.plot(K[1,:],pv_bin_centres,'r-.',label='PV Mapped')
-		if (j == 0):
-			if (i == 0):
-				ax_K.set_xlabel('K$_y$ (m$^{2}$ s$^{-1}$)')
-			else:
-				ax_K.set_xlabel('K$_y$ (m$^{2}$ s$^{-1}$)')
-			#ax[k].set_xticklabels([])
-		ax[k].set_xlabel('X (km)')
-		#ax_K.set_xlim(0,3)
-		ax[k].set_ylim(0,520)
-		ax[k].set_xlim(0,520)
-		#ax_K.ticklabel_format(axis='x', style='sci', scilimits=(-2, 2))
-		#ax_K.ticklabel_format(style = 'sci',axis = 'x',scilimits=(0,0))
-		if (i==0):
-			ax[k].set_ylabel('Y (km)')
-		else:#
-			ax[k].set_yticklabels([])
-		
-		if (i == 0 and j == 0):
-			ax_K.legend(loc = 'upper left')
-		ax_K.grid()
-		k+=1
+	ax[i].pcolor(xx,yy,psi_ave[:,:,i],alpha=0.5,cmap = cm.gray)
+	ax_alpha = ax[i].twiny()
+	ax_alpha.plot(tscale[0,:],bin_centres,'b',label='Full')
+	ax_alpha.plot(tscale[1,:],pv_bin_centres,'r-.',label='PV mapped')
+	ax_alpha.grid()
+	if (i == 0):
+		#ax_alpha.set_title('Top Layer')
+		ax[i].set_ylabel('Y (km)')
+	else:
+		#ax_alpha.set_title('Bottom Layer')
+		ax[i].set_yticklabels([])
+	ax_alpha.set_xlim(0,1000)
+	ax[i].set_ylim(0,520)
+	ax_alpha.set_xlabel('Time Scale (Days)')
+	ax[i].set_xlabel('X (km)')
+	
+	if (i == 0):
+		ax_alpha.legend()
 
-fig_name = fig_dir + 'new_K_PV'
-plt.savefig(fig_name)
+fig_name = fig_dir + 'pv_tscale_uniform'
+plt.savefig(fig_name)	
 
 	
 

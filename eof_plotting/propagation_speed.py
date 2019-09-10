@@ -17,17 +17,21 @@ from grid_plot import square_grid_plot
 
 # READ FIRST TWO EOFS
 
-regime = 2
+regime = 1
 ii = 512
 jj = 512
-nt = 100
+nt = 400
 	
 home_dir = '/media/josiepark/Seagate Expansion Drive/PhD/DATA/Saves/%i' % regime
-fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/2/EOF/'
+fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/1/EOF/'
 
-field_file = home_dir + '/QG/eof_7-8.nc'
+field_file = home_dir + '/QG/eof_3-4.nc'
 field_data = Dataset(field_file,'r')
 psi = np.transpose(field_data.variables['Stream Function'][:nt,0,:,:])
+
+plt.pcolor(np.transpose(psi[:,:,0]),cmap = cm.jet)
+plt.show()
+plt.close()
 
 #eof_file = home_dir + '/STATS/EOF/eof.nc'
 #eof_data = Dataset(eof_file,'r')
@@ -54,10 +58,10 @@ psi = np.transpose(field_data.variables['Stream Function'][:nt,0,:,:])
 
 
 xcoord = 0
-eps = 10
-max_ycoord = np.argmax(psi[xcoord,:,0])
-center_start = np.argmin(psi[xcoord,max_ycoord,:40])
-center_end = np.argmin(psi[xcoord,max_ycoord,center_start+eps:])
+eps = 50
+max_ycoord = np.argmin(psi[xcoord,:,0])
+center_start = np.argmax(psi[xcoord,max_ycoord,:100])
+center_end = np.argmax(psi[xcoord,max_ycoord,center_start+eps:250])
 print(max_ycoord,center_start,center_end+eps+center_start)
 
 plt.pcolor(psi[xcoord,:,:],cmap = cm.jet)
@@ -65,7 +69,7 @@ plt.xlabel('Time (days)')
 plt.ylabel('Y (km)')
 plt.ylim([0,520])
 plt.colorbar()
-fig_name = fig_dir + 'hovmoller_eof_rossbyhalf'
+fig_name = fig_dir + 'hovmoller_eof_rossby'
 plt.savefig(fig_name)
 
 

@@ -5,6 +5,7 @@ from netCDF4 import Dataset
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from scipy.optimize import curve_fit,fsolve,root
+from scipy.interpolate import interp1d
 
 
 import sys
@@ -25,10 +26,14 @@ ntau = 100
 #R_data = Dataset(file_name,'r')
 #R1 = np.transpose(R_data.variables['LAVF'][:])
 
-file_name = home_dir + '/STATS/LAVF/full_test_PVDISP_LAVF.nc'
+file_name = home_dir + '/STATS/LAVF/full_PVDISP_LAVF.nc'
 R_data = Dataset(file_name,'r')
 R2 = np.transpose(R_data.variables['LAVF'][:])
-print(R2.shape)
+#print(R2.shape)
+
+#file_name = home_dir + '/STATS/LAVF/PV_LAVF_2.nc'
+#R_data = Dataset(file_name,'r')
+#R2 = R_data.variables['LAVF'][:]
 			
 # PLOT R
 
@@ -70,37 +75,45 @@ ax = a4_plot(nrows,ncols,left_space,right_space,bottom_space,top_space,hor_space
 
 k = 0
 
+t_max = 15
+t_int = np.arange(0,t_max,1)
 
 	
 for i in range(ncols):
 	for j in range(nrows):
-		popt, pcov = curve_fit(func_y,t,R2[k,:])
-		#print('coeffs=',popt)
-		ax[k].plot(t,func_y(t,*popt),'r-.',label = "Fitted Curve")
-		theta[k] = 1./popt[0]
+		popt, pcov = curve_fit(func_y,t,R2[k,:],maxfev=1500)
 		omega[k] = popt[1]
+		#popt1,pcov2 = curve_fit(func_y,t_int,R2[k,:t_max],maxfev=1500)
+		#f = interp1d(func_y(t_int,*popt1),t_int)
+		#theta[k] = f(np.exp(-1))
+		theta[k] = 1./popt[0]
+		#print(np.exp(-1))
+		print(theta[k])
+		print('coeffs=',popt)
+		ax[k].plot(t,func_y(t,*popt),'r-.',label = "Fitted Curve")
+		#omega[k] = popt[1]
 		
 		if j == nrows-1:
 			ax[k].set_xlabel('Time Lag (days)')
 		else:
 			ax[k].set_xticklabels([])
 		if i == 0:
-			ax[k].set_ylabel('R$_y$ (km s $^{-1}$)')
+			ax[k].set_ylabel('R$_y$')
 		else:
 			ax[k].set_yticklabels([])
 
 		#ax[k].plot(t,R1[k,:],'b-',label = "PV Mapped")
 		ax[k].plot(t,R2[k,:],'b-',label = "PV Mapped")			
-		ax[k].legend(loc = 'upper left')
+		ax[0].legend(loc = 'upper left')
 		ax[k].grid()
-		ax[k].text(.5,.05,r'$ \theta^{(1)} =$ %.2f' % theta[k], horizontalalignment='center',verticalalignment='center', transform=ax[k].transAxes)
+		ax[k].text(.5,.05,r'$ T_L =$ %.2f' % theta[k], horizontalalignment='center',verticalalignment='center', transform=ax[k].transAxes)
 		ax[k].text(.9,.05,'Bin %i' % (k+1),horizontalalignment = 'center',verticalalignment = 'center', transform = ax[k].transAxes)
 		
-		ax[k].set_ylim([-.4,1])
+		ax[k].set_ylim([-1,1])
 		
 		k+=1
 
-fig_name = fig_dir + 'test_PV_LAVF'
+fig_name = fig_dir + 'test_PV_LAVF_osc'
 plt.savefig(fig_name)
 plt.close()	
 
@@ -108,13 +121,13 @@ plt.close()
 	
 # WRITE THETA TO FILE
 
-file_name = home_dir + '/STATS/THETA/theta_PV.nc'
+file_name = home_dir + '/STATS/THETA/markov1_looping_theta_PV.nc'
 theta_data = Dataset(file_name,'w',format='NETCDF4_CLASSIC')
 theta_data.createDimension('Bin',nbins)
 theta_var = theta_data.createVariable('Theta',np.float64,('Bin'))
 theta_var[:] = theta 
 
-file_name = home_dir + '/STATS/THETA/omega_PV.nc'
+file_name = home_dir + '/STATS/THETA/markov1_looping_omega_PV.nc'
 omega_data = Dataset(file_name,'w',format = 'NETCDF4_CLASSIC')
 omega_data.createDimension('Bin',nbins)
 omega_var = omega_data.createVariable('Omega',np.float64,('Bin'))

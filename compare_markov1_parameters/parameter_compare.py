@@ -32,7 +32,7 @@ theta_data = Dataset(theta_file,'r')
 theta = theta_data.variables['Theta'][:]
 
 K_dir = home_dir + 'STATS/DIFFUSIVITY/'
-K_file = K_dir + 'pseudo_MEAN_DIFF.nc'
+K_file = K_dir + 'pseudo_new_DIFF.nc'
 K_data = Dataset(K_file,'r')
 K = np.transpose(K_data.variables['Diffusivity'][:])
 K = np.swapaxes(K,0,1)
@@ -115,17 +115,11 @@ if i_sigma == 1:
 	
 # WRITE NEW DIFFUSIVITY TO FILE
 
-file_name = home_dir + '/STATS/DIFFUSIVITY/derived_diffusivity.nc'
-K_data = Dataset(file_name,'w',format='NETCDF4_CLASSIC')
-K_data.createDimension('Bin',nbins)
-K_data.createDimension('Dimension',2)
-K_data.createDimension('Layer',2)
-K_var = K_data.createVariable('Diffusivity',np.float64,('Bin','Dimension','Layer',))
-K_var[:] = K_new
+
 
 # READ LAGRANGIAN VELOCITY VARIANCE
 
-file_name = home_dir + '/STATS/SIGMA/lagrangian_sigma.nc'
+file_name = home_dir + 'STATS/SIGMA/new_lagrangian_sigma.nc'
 sigma_data = Dataset(file_name,'r')
 sigma_L = sigma_data.variables['Lagrangian Velocity Variance'][:]
 sigma_L_new = np.zeros((10,2,2))
@@ -141,6 +135,18 @@ plt.title('K')
 plt.savefig(fig_dir + 'K_lag.png')
 plt.show()
 plt.close()
+
+print(K_new)
+
+
+
+file_name = home_dir + 'STATS/DIFFUSIVITY/new_derived_diffusivity.nc'
+K_data = Dataset(file_name,'w',format='NETCDF4_CLASSIC')
+K_data.createDimension('Bin',nbins)
+K_data.createDimension('Dimension',2)
+K_data.createDimension('Layer',2)
+K_var = K_data.createVariable('Diffusivity',np.float64,('Bin','Dimension','Layer',))
+K_var[:] = K_new
 
 
 sigma_L_new = sigma_L_new/scale_new**2

@@ -14,7 +14,7 @@ from grid_plot import square_grid_plot,a4_plot
 regime = 1
 
 home_dir = '/media/josiepark/Seagate Expansion Drive/PhD/DATA/Saves/%i' % regime
-fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/%i/STATS/SPD/STOCHASTIC_MODELS/DIFFUSION/' % regime
+fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/%i/STATS/SPD/STOCHASTIC_MODELS/MARKOV1/' % regime
 nbins = 10
 nt = 1000
 
@@ -27,19 +27,19 @@ for b in range(nbins):
 	spd_data = Dataset(file_name,'r')
 	tmp = np.transpose(spd_data.variables['SPD'][:])
 	#print(tmp.shape)
-	print(spd_data)
-	SPD[0,b,:] = np.mean(tmp[1,:,1,:nt],0)
+	#print(spd_data)
+	SPD[0,b,:] = np.mean(tmp[1,:,0,:nt],0)
 	
-	file_name = home_dir + '/STATS/SPD/NEW_DIFFUSION/DIFFUSIVITY/diffusivity_diffusion_SPD_bin%i.nc' % (b+1)
+	file_name = home_dir + '/STATS/SPD/SCALED_MARKOV1/PV/pv_markov1_SPD_bin%i.nc' % (b+1)
 	spd_data = Dataset(file_name,'r')
-	tmp = np.transpose(spd_data.variables['SPD'][:,1,1])
-	print(spd_data)
+	tmp = np.transpose(spd_data.variables['SPD'][:])
+	#print(spd_data)
 	SPD[1,b,:] = tmp[:nt]
 
-	file_name = home_dir + '/STATS/SPD/NEW_DIFFUSION/DERIVED/derived_diffusion_SPD_bin%i.nc' % (b+1)
+	file_name = home_dir + '/STATS/SPD/SCALED_MARKOV1/PV_SPD_THETA/pv_spd_theta_markov1_SPD_bin%i.nc' % (b+1)
 	spd_data = Dataset(file_name,'r')
-	tmp = np.transpose(spd_data.variables['SPD'][:,1,1])
-	print(spd_data)
+	tmp = np.transpose(spd_data.variables['SPD'][:])
+	#print(spd_data)
 	SPD[2,b,:] = tmp[:nt]
 	
 	#exit()
@@ -79,16 +79,16 @@ k = 0
 for i in range(ncols):
 	for j in range(nrows):
 		ax[k].plot(t,SPD[0,k,:],'b-',label = 'Full')
-		ax[k].plot(t,SPD[1,k,:],'r--',label = 'From SPD')
-		ax[k].plot(t,SPD[2,k,:],'g-.',label = 'From sigma')
+		ax[k].plot(t,SPD[1,k,:],'r--',label = 'From $\sigma$')
+		ax[k].plot(t,SPD[2,k,:],'g-.',label = 'From $K$ and $T_L$')
 		
 		ax[k].ticklabel_format(style = 'sci',axis = 'y',scilimits=(0,0))	
 		#ax[k].set_ylim([0,4.e7])
 		#ax[k].set_ylim([0,1.5e8])
-		ax[k].set_ylim([0,2.e4])
+		ax[k].set_ylim([0,1.e4])
 		ax[k].text(.9,.1,'Bin %i' % (k+1),horizontalalignment = 'center',verticalalignment = 'center', transform = ax[k].transAxes)
 		if i == 0:
-			ax[k].set_ylabel('D$_y$ (km s $^{-1}$)')
+			ax[k].set_ylabel('D$_y$ (km $^{2}$)')
 		else:
 			ax[k].set_yticklabels([])
 		if j == nrows-1:
@@ -100,7 +100,7 @@ for i in range(ncols):
 		
 
 ax[0].legend()
-fig_name = fig_dir + 'meridional_bottom_diffusivity_diffusion_SPD'
+fig_name = fig_dir + 'pv_parameters_theta_markov1_SPD'
 plt.savefig(fig_name)
 plt.close()
 ax = a4_plot(nrows,ncols,left_space,right_space,bottom_space,top_space,ver_space,hor_space)
@@ -109,8 +109,8 @@ k = 0
 for i in range(ncols):
 	for j in range(nrows):
 		ax[k].loglog(t,SPD[0,k,:],'b-',label = 'Full')
-		ax[k].loglog(t,SPD[1,k,:],'r--',label = 'From SPD')
-		ax[k].loglog(t,SPD[2,k,:],'g-.',label = 'From sigma')
+		ax[k].loglog(t,SPD[1,k,:],'r--',label = 'From $\sigma$')
+		ax[k].loglog(t,SPD[2,k,:],'g-.',label = 'From $K$ and $T_L$')
 		ax[k].loglog(t[:100],t[:100]**2,'k--',label = 'Ballisitc')
 		ax[k].loglog(t[100:],t[100:],'k-.',label = 'Diffusive')
 		
@@ -118,7 +118,7 @@ for i in range(ncols):
 		#ax[k].set_ylim([1,1.e5])
 		ax[k].text(.9,.1,'Bin %i' % (k+1),horizontalalignment = 'center',verticalalignment = 'center', transform = ax[k].transAxes)
 		if i == 0:
-			ax[k].set_ylabel('D$_y$ (km s $^{-1}$)')
+			ax[k].set_ylabel('D$_y$ (km $^{2}$)')
 		else:
 			ax[k].set_yticklabels([])
 		if j == nrows-1:
@@ -130,7 +130,7 @@ for i in range(ncols):
 		
 
 ax[0].legend()
-fig_name = fig_dir + 'meridional_bottom_diffusivity_diffusion_logSPD'
+fig_name = fig_dir + 'pv_parameters_theta_markov1_logSPD'
 plt.savefig(fig_name)
 	
 	

@@ -17,7 +17,7 @@ plt.rcParams.update({'font.size': 8})
 regime = 2
 
 home_dir = '/media/josiepark/Seagate Expansion Drive/PhD/DATA/Saves/%i/' % regime
-fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/%i/STATS/ALPHA/' % regime
+fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/%i/STATS/THETA/' % regime
 nbins = 10
 nt = 1000
 
@@ -29,23 +29,17 @@ psi_ave = np.transpose(psi_data.variables['Time-averaged Stream Function'][:])
 
 # READ ALPHA
 
-alpha = np.zeros((3,2,nbins,2))
+file_name = home_dir + 'STATS/THETA/omega_estimate.nc'
+alpha_data = Dataset(file_name,'r')
+tmp = np.transpose(alpha_data.variables['Omega'][:])
+print(tmp.shape)
+print(alpha_data)
+omega = tmp
 
-for i in range(3):
-	file_name = home_dir + 'STATS/ALPHA/full_new_MEAN_ALPHA.nc'
-	alpha_data = Dataset(file_name,'r')
-	tmp = np.transpose(alpha_data.variables['Alpha'][:])
-	alpha[0,:,:,:] = tmp
+basinscale = 520.e5
+scale = basinscale/512
+
 	
-	file_name = home_dir + 'STATS/ALPHA/eddy_new_MEAN_ALPHA.nc'
-	alpha_data = Dataset(file_name,'r')
-	tmp = np.transpose(alpha_data.variables['Alpha'][:])
-	alpha[1,:,:,:] = tmp
-	
-	file_name = home_dir + 'STATS/ALPHA/pseudo_new_MEAN_ALPHA.nc'
-	alpha_data = Dataset(file_name,'r')
-	tmp = np.transpose(alpha_data.variables['Alpha'][:])
-	alpha[2,:,:,:] = tmp
 
 # PLOT ALPHA SUPERIMPOSED ON THE TIME-AVERAGED STREAM FUNCTION
 
@@ -59,12 +53,12 @@ bin_centres.append(bin_width/2.)
 for b in range(nbins-1):
 	bin_centres.append(bin_centres[b]+bin_width)
 
-nrows = 2
+nrows = 1
 ncols = 2	
-hor_space = .03
+hor_space = .04
 ver_space = 0.04
-top_space = .05
-bottom_space = .051
+top_space = .11
+bottom_space = .1
 left_space = .08
 right_space = .02
 fig_width = 8.27
@@ -77,21 +71,17 @@ ax = square_grid_plot(nrows,ncols,left_space,right_space,bottom_space,top_space,
 for i in range(ncols):
 	for j in range(nrows):
 		
-		ax[k].pcolor(xx,yy,psi_ave[:,:,j],alpha=0.5,cmap = cm.gray)
+		ax[k].pcolor(xx,yy,psi_ave[:,:,i],alpha=0.5,cmap = cm.gray)
 		ax_K = ax[k].twiny()
-		ax_K.plot(alpha[0,i,:,j],bin_centres,'b-',label='Full')
-		ax_K.plot(alpha[1,i,:,j],bin_centres,'g--',label='Eddy')
-		ax_K.plot(alpha[2,i,:,j],bin_centres,'r-.',label='FFE')
+		ax_K.plot(omega[:,i],bin_centres,'b-')
 		if (j == 0):
 			if (i == 0):
-				ax_K.set_xlabel('alpha$_x$')
+				ax_K.set_xlabel('$\Omega$ (days$^{-1}$)')
 			else:
-				ax_K.set_xlabel('alpha$_y$')
+				ax_K.set_xlabel('$\Omega$ (days$^{-1}$)')
 			ax[k].set_xticklabels([])
-		else:
-		
-			ax[k].set_xlabel('X (km)')
-		ax_K.set_xlim(0,3)
+		ax[k].set_xlabel('X (km)')
+		ax_K.set_xlim(-.035,.02)
 		ax[k].set_ylim(0,520)
 		ax[k].set_xlim(0,520)
 		if (i==0):
@@ -99,12 +89,12 @@ for i in range(ncols):
 		else:
 			ax[k].set_yticklabels([])
 		
-		if (i == 0 and j == 0):
-			ax_K.legend(loc = 'upper left')
+		#if (i == 0 and j == 0):
+		#	ax_K.legend(loc = 'upper left')
 		ax_K.grid()
 		k+=1
 
-fig_name = fig_dir + 'new_alpha_uniform'
+fig_name = fig_dir + 'omega_uniform'
 plt.savefig(fig_name)
 
 
@@ -112,4 +102,4 @@ plt.savefig(fig_name)
 	
 
 
-
+                             

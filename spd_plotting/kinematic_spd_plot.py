@@ -24,13 +24,19 @@ nrel = 9
 
 # READ KINEMATIC SPD #
 
-SPD = np.zeros((2,nbins,2,nt))
+SPD_1 = np.zeros((2,nbins,2,nt))
 U0_SPD = np.zeros((2,nbins,2,nt))
+SPD_2 = np.zeros((2,nbins,2,nt))
 
 file_name = home_dir + '/STATS/SPD/KINEMATIC/kinematic_top.nc'
 spd_data = Dataset(file_name,'r')
 print(spd_data)
-SPD[0,:,:,:] = np.transpose(spd_data.variables['SPD'][:nt,:,:])
+SPD_1[0,:,:,:] = np.transpose(spd_data.variables['SPD'][:nt,:,:])
+
+file_name = home_dir + '/STATS/SPD/KINEMATIC/kinematic_rossby_top.nc'
+spd_data = Dataset(file_name,'r')
+print(spd_data)
+SPD_2[0,:,:,:] = np.transpose(spd_data.variables['SPD'][:nt,:,:])
 
 file_name = home_dir + '/STATS/SPD/KINEMATIC/kinematic_zonalRossby_top.nc'
 spd_data = Dataset(file_name,'r')
@@ -41,7 +47,12 @@ U0_SPD[0,:,:,:] = np.transpose(spd_data.variables['SPD'][:nt,:,:])
 file_name = home_dir + '/STATS/SPD/KINEMATIC/kinematic_bottom.nc'
 spd_data = Dataset(file_name,'r')
 print(spd_data)
-SPD[1,:,:,:] = np.transpose(spd_data.variables['SPD'][:nt,:,:])
+SPD_1[1,:,:,:] = np.transpose(spd_data.variables['SPD'][:nt,:,:])
+
+file_name = home_dir + '/STATS/SPD/KINEMATIC/kinematic_rossby_bottom.nc'
+spd_data = Dataset(file_name,'r')
+print(spd_data)
+SPD_2[1,:,:,:] = np.transpose(spd_data.variables['SPD'][:nt,:,:])
 
 file_name = home_dir + '/STATS/SPD/KINEMATIC/kinematic_zonalRossby_bottom.nc'
 spd_data = Dataset(file_name,'r')
@@ -80,10 +91,11 @@ for b in range(nbins):
 	k=0
 	for i in range(ncols):
 		for j in range(nrows):
-			ax[k].plot(t,SPD[j,b,i,:],'b-',label = 'rossbyHalf')
-			ax[k].plot(t,U0_SPD[j,b,i,:],'g-.',label = 'rossbyHalf +  zonal')
-			ax[k].plot(t,pseudo_SPD[j,b,i,:],'r--',label = 'FFE')
-			if (i==0 and j == 0):
+			ax[k].plot(t,SPD_1[j,b,i,:],'b-.',label = 'rossbyHalf')
+			ax[k].plot(t,U0_SPD[j,b,i,:],'r--',label = 'rossbyHalf +  zonal')
+			ax[k].plot(t,SPD_2[j,b,i,:],'g:',label = 'rossby')
+			ax[k].plot(t,pseudo_SPD[j,b,i,:],'k',label = 'FFE')
+			if (i==0 and j == 0 and (b == 0 or b == 5)):
 				ax[k].legend(loc = 'upper left')
 			ax[k].ticklabel_format(style = 'sci',axis = 'y',scilimits=(0,0))
 			ax[k].grid()
@@ -116,10 +128,12 @@ for b in range(nbins):
 	#ax[0].set_ylim([0,3.e4])
 	#ax[1].set_ylim([0,5])	
 
-	fig_name = fig_dir + 'zonal_SPD_bin%i' % (b+1)
+	fig_name = fig_dir + 'new_EO_zonal_SPD_bin%i' % (b+1)
 	plt.savefig(fig_name)
 	
 	plt.close()
+	
+exit()
 
 # compare contributions across the bins
 

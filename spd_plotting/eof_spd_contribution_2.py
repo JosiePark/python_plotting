@@ -68,6 +68,16 @@ nrows = 2
 ncols = 2
 fig_width = 8.27
 
+right_space = 0.02
+left_space = 0.09
+top_space = 0.05
+bottom_space = 0.08
+hor_space = 0.06
+ver_space = 0.06
+nrows = 2
+ncols = 2
+fig_width = 8.27
+
 ax = square_grid_plot(nrows,ncols,left_space,right_space,bottom_space,top_space,hor_space,ver_space,fig_width)
 
 contribution = np.zeros((2,2,nbins,2))
@@ -88,8 +98,8 @@ k = 0
 for c in range(ncols):
 	for r in range(nrows):
 		line = []
-		ax[k].plot(contribution[0,c,:,r],np.linspace(1,nbins,nbins),label = 'EOFs 1-10')
-		ax[k].plot(contribution[1,c,:,r],np.linspace(1,nbins,nbins),label = 'EOFs 1-20')
+		ax[k].plot(contribution[0,c,:,r],np.linspace(1,nbins,nbins),'b-.',label = 'EOFs 1-10')
+		ax[k].plot(contribution[1,c,:,r],np.linspace(1,nbins,nbins),'r--',label = 'EOFs 1-20')
 
 		
 		ax[k].set_xlim([-2,2])

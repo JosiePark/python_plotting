@@ -29,20 +29,49 @@ psi_ave = np.transpose(psi_data.variables['Time-averaged Stream Function'][:])
 
 # READ DIFFUSIVITY
 
-K = np.zeros((2,nbins))
-
+K = np.zeros((2,nbins,2))
+	
 file_name = home_dir + 'STATS/DIFFUSIVITY/pseudo_new_DIFF.nc'
 diff_data = Dataset(file_name,'r')
-tmp = np.transpose(diff_data.variables['Diffusivity'][0,:,1])
-K[0,:] = tmp
-
-file_name = home_dir + 'STATS/DIFFUSIVITY/test_full_PVDISP_MEAN_DIFF.nc'
-diff_data = Dataset(file_name,'r')
 tmp = np.transpose(diff_data.variables['Diffusivity'][:])
-K[1,:] = tmp
+print(diff_data)
+K = tmp
 
-K = K/86400.
-	
+# READ LAGRANGIAN VELOCITY VARIANCE
+
+file_name = home_dir + '/STATS/SIGMA/new_lagrangian_sigma.nc'
+sigma_data = Dataset(file_name,'r')
+sigma_L = sigma_data.variables['Lagrangian Velocity Variance'][:]
+print(sigma_data)
+plt.plot(sigma_L[:,0,0,0])
+plt.show()
+sigma = np.zeros((2,10,2))
+sigma[0,:,:] = sigma_L[:,0,0,:]
+sigma[1,:,:] = sigma_L[:,1,1,:]
+
+theta_dir = home_dir + 'STATS/THETA/'
+theta_file = theta_dir + 'pseudo_theta_osc.nc'
+theta_data = Dataset(theta_file,'r')
+print(theta_data)
+theta = theta_data.variables['Theta'][:]
+theta = np.swapaxes(theta,0,1)
+
+# RESCALE SIGMA	
+
+basinscale = 520.e5
+ii = 512
+scale = basinscale/float(ii)
+uscale = 1.
+tscale = scale/uscale
+
+scale_new = scale/(10**5)
+tscale_new = tscale/86400.
+
+#sigma = sigma*scale_new**2
+
+K_new = np.multiply(sigma,theta)
+
+K_new = K_new/86400.
 
 # PLOT ALPHA SUPERIMPOSED ON THE TIME-AVERAGED STREAM FUNCTION
 
@@ -56,56 +85,43 @@ bin_centres.append(bin_width/2.)
 for b in range(nbins-1):
 	bin_centres.append(bin_centres[b]+bin_width)
 	
-# READ PV BIN WIDTHS # 
-
-file_name = home_dir + '/TRAJ/PV_BINS/test_bin_width.nc'
-bin_data = Dataset(file_name,'r')
-bin_width = np.mean(bin_data.variables['Release Bin Width'][:],0)
-
-bin_boundary = np.zeros((nbins+1))
-for b in range(nbins):
-	bin_boundary[b+1] = bin_boundary[b] + bin_width[b]
-pv_bin_centres = .5*(bin_boundary[:-1]+bin_boundary[1:])
-print(pv_bin_centres)
-
-# CALCULATE BIN CENTRES FOR PV BINS #
-	
-nrows = 1
-ncols = 1
-hor_space = .03
-ver_space = 0.
-top_space = .12
-bottom_space = .15
-left_space = .15
-right_space = .04
-fig_width = 8.27/2.
+right_space = 0.02
+left_space = 0.1
+top_space = 0.08
+bottom_space = 0.08
+hor_space = 0.07
+ver_space = 0.06
+nrows = 2
+ncols = 2
+fig_width = 8.27
 
 k = 0
 ax = square_grid_plot(nrows,ncols,left_space,right_space,bottom_space,top_space,hor_space,ver_space,fig_width)
 
-K = K*(1000)**2
+K = K/86400.
 
 for i in range(ncols):
-	for j in range(nrows):	
+	for j in range(nrows):
+		
 		ax[k].pcolor(xx,yy,psi_ave[:,:,j],alpha=0.5,cmap = cm.gray)
 		ax_K = ax[k].twiny()
-		ax_K.plot(K[0,:],bin_centres,'b',label='Full')
-		ax_K.plot(K[1,:],pv_bin_centres,'r-.',label='PV Mapped')
+		ax_K.plot(K[i,:,j],bin_centres,'b-',label='From D')
+		ax_K.plot(K_new[i,:,j],bin_centres,'g--',label='From sigma*T')
 		if (j == 0):
 			if (i == 0):
-				ax_K.set_xlabel('K$_y$ (m$^{2}$ s$^{-1}$)')
+				ax_K.set_xlabel('K$_x$ (km$^{2}$ s$^{-1}$)')
 			else:
-				ax_K.set_xlabel('K$_y$ (m$^{2}$ s$^{-1}$)')
-			#ax[k].set_xticklabels([])
-		ax[k].set_xlabel('X (km)')
+				ax_K.set_xlabel('K$_y$ (km$^{2}$ s$^{-1}$)')
+			ax[k].set_xticklabels([])
+		else:
+			ax[k].set_xlabel('X (km)')
 		#ax_K.set_xlim(0,3)
 		ax[k].set_ylim(0,520)
 		ax[k].set_xlim(0,520)
-		#ax_K.ticklabel_format(axis='x', style='sci', scilimits=(-2, 2))
-		#ax_K.ticklabel_format(style = 'sci',axis = 'x',scilimits=(0,0))
+		ax_K.ticklabel_format(style = 'sci',axis = 'x',scilimits=(0,0))
 		if (i==0):
 			ax[k].set_ylabel('Y (km)')
-		else:#
+		else:
 			ax[k].set_yticklabels([])
 		
 		if (i == 0 and j == 0):
@@ -113,7 +129,7 @@ for i in range(ncols):
 		ax_K.grid()
 		k+=1
 
-fig_name = fig_dir + 'new_K_PV'
+fig_name = fig_dir + 'test_K_compare'
 plt.savefig(fig_name)
 
 	

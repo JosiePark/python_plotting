@@ -14,7 +14,7 @@ plt.rcParams.update({'font.size': 8})
 
 # INPUT PARAMETERS #
 
-regime = 2
+regime = 1
 
 home_dir = '/media/josiepark/Seagate Expansion Drive/PhD/DATA/Saves/%i/' % regime
 fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/%i/STATS/DIFFUSIVITY/' % regime
@@ -31,20 +31,22 @@ psi_ave = np.transpose(psi_data.variables['Time-averaged Stream Function'][:])
 
 K = np.zeros((3,2,nbins,2))
 
-file_name = home_dir + 'STATS/DIFFUSIVITY/full_MEAN_DIFF.nc'
+file_name = home_dir + 'STATS/DIFFUSIVITY/full_new_DIFF.nc'
 diff_data = Dataset(file_name,'r')
 tmp = np.transpose(diff_data.variables['Diffusivity'][:])
 K[0,:,:,:] = tmp
 	
-file_name = home_dir + 'STATS/DIFFUSIVITY/eddy_MEAN_DIFF.nc'
+file_name = home_dir + 'STATS/DIFFUSIVITY/eddy_new_DIFF.nc'
 diff_data = Dataset(file_name,'r')
 tmp = np.transpose(diff_data.variables['Diffusivity'][:])
 K[1,:,:,:] = tmp
 	
-file_name = home_dir + 'STATS/DIFFUSIVITY/pseudo_MEAN_DIFF.nc'
+file_name = home_dir + 'STATS/DIFFUSIVITY/pseudo_new_DIFF.nc'
 diff_data = Dataset(file_name,'r')
 tmp = np.transpose(diff_data.variables['Diffusivity'][:])
 K[2,:,:,:] = tmp
+
+K = K/86400.
 
 # PLOT ALPHA SUPERIMPOSED ON THE TIME-AVERAGED STREAM FUNCTION
 
@@ -81,9 +83,9 @@ for i in range(ncols):
 		ax_K.plot(K[2,i,:,j],bin_centres,'r-.',label='FFE')
 		if (j == 0):
 			if (i == 0):
-				ax_K.set_xlabel('K$_x$')
+				ax_K.set_xlabel('K$_x$ (km$^{2}$ s$^{-1}$)')
 			else:
-				ax_K.set_xlabel('K$_y$')
+				ax_K.set_xlabel('K$_y$ (km$^{2}$ s$^{-1}$)')
 			ax[k].set_xticklabels([])
 		else:
 			ax[k].set_xlabel('X (km)')
@@ -101,7 +103,7 @@ for i in range(ncols):
 		ax_K.grid()
 		k+=1
 
-fig_name = fig_dir + 'K_uniform'
+fig_name = fig_dir + 'new_K_uniform'
 plt.savefig(fig_name)
 
 	

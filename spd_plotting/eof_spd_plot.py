@@ -13,7 +13,7 @@ plt.rcParams.update({'font.size': 8})
 
 # INPUT PARAMETERS #
 
-regime = 1
+regime = 2
 
 home_dir = '/media/josiepark/Seagate Expansion Drive/PhD/DATA/Saves/%i' % regime
 fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/%i/STATS/SPD/EOF/' % regime
@@ -33,7 +33,7 @@ if regime == 1:
 		tmp = np.transpose(spd_data.variables['SPD'][:nt])
 		SPD[0,:,b,:,:,:] = tmp
 	
-		file_name = home_dir + '/STATS/SPD/EOF_MINUS_1-2_NEW/EOF_minus_1-2_new_pseudo_uniform_SPD_bin%i.nc' % (b+1)
+		file_name = home_dir + '/STATS/SPD/EOF_MINUS_1-2/EOF_minus_1-2_pseudo_uniform_SPD_bin%i.nc' % (b+1)
 		spd_data = Dataset(file_name,'r')
 		tmp = np.transpose(spd_data.variables['SPD'][:nt])
 		SPD[1,:,b,:,:,:] = tmp
@@ -123,7 +123,7 @@ if regime == 1:
 				ax[k].plot(t,ave_SPD[3,i,b,j,:],label = 'zonal')
 				ax[k].plot(t,ave_SPD[4,i,b,j,:],label = 'oscillations')
 				ax[k].plot(t,ave_SPD[5,i,b,j,:],label = 'altZonal')
-				if (i == 0 and j == 0):
+				if (i == 0 and j == 0 and (b == 0 or b == 5)):
 					ax[k].legend(loc = 'upper left')
 				ax[k].ticklabel_format(style = 'sci',axis = 'y',scilimits=(0,0))
 				ax[k].grid()
@@ -132,9 +132,9 @@ if regime == 1:
 					ax[k].set_xlabel('Time (days)')
 				else:
 					if (i==0):
-						ax[k].set_title('D$_x$ (km s $^{-1}$)')
+						ax[k].set_title('D$_x$ (km$^{2}$)')
 					else:
-						ax[k].set_title('D$_y$ (km s $^{-1}$)')
+						ax[k].set_title('D$_y$ (km$^{2}$)')
 				
 				if (i==0):
 					if (j == 1):
@@ -158,7 +158,7 @@ else:
 				ax[k].plot(t,ave_SPD[1,i,b,j,:],label = 'zonal')				
 				ax[k].plot(t,ave_SPD[3,i,b,j,:],label = 'oscillations')	
 				ax[k].plot(t,ave_SPD[5,i,b,j,:],label = 'altZonal')
-				if (i == 0 and j == 0):
+				if (i == 0 and j == 0 and (b == 0 or b == 5)):
 					ax[k].legend(loc = 'upper left')
 				ax[k].ticklabel_format(style = 'sci',axis = 'y',scilimits=(0,0))
 				ax[k].grid()
@@ -167,9 +167,9 @@ else:
 					ax[k].set_xlabel('Time (days)')
 				else:
 					if (i==0):
-						ax[k].set_title('D$_x$ (km s $^{-1}$)')
+						ax[k].set_title('D$_x$ (km$^{2}$)')
 					else:
-						ax[k].set_title('D$_y$ (km s $^{-1}$)')
+						ax[k].set_title('D$_y$ (km$^{2}$)')
 				
 				if (i==0):
 					if (j == 1):

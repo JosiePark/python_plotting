@@ -72,7 +72,7 @@ for b in range(nbins):
 	ax[0].legend()
 	ax[0].ticklabel_format(style = 'sci',axis = 'y',scilimits=(0,0))
 	ax[0].set_xlabel('Time (days)')
-	ax[0].set_ylabel('D$_y$ (km s $^{-1}$)')
+	ax[0].set_ylabel('D$_y$ (km$^{2}$)')
 	ax[0].grid()
 	
 	fig_name = fig_dir + 'PV_SPD_bin%i' % (b+1)
@@ -101,7 +101,7 @@ for i in range(ncols):
 		ax[k].plot(t,SPD[0,k,:],'b-',label='Full')
 		ax[k].plot(t,SPD[1,k,:],'r-.',label='PV Mapped')
 		#ax[k].axvline(x = t[k,0], label = 'T',color = 'k')
-		ax[k].axvline(x = pv_tscale[k], label = 'PV Mapped T',color = 'k',linestyle = '-.')
+		#ax[k].axvline(x = pv_tscale[k], label = 'PV Mapped T',color = 'k',linestyle = '-.')
 		ax[k].grid()
 		#ax[k].ticklabel_format(style = 'sci',axis = 'y',scilimits=(0,0))
 		if regime == 1:
@@ -113,7 +113,7 @@ for i in range(ncols):
 		else:
 			ax[k].set_xticklabels([])
 		if i == 0:
-			ax[k].set_ylabel('D$_y$ (km s $^{-1}$)')
+			ax[k].set_ylabel('D$_y$ (km$^{2}$)')
 		else:
 			ax[k].set_yticklabels([])
 
