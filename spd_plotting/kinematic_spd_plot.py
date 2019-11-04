@@ -95,7 +95,7 @@ for b in range(nbins):
 			ax[k].plot(t,U0_SPD[j,b,i,:],'r--',label = 'rossbyHalf +  zonal')
 			ax[k].plot(t,SPD_2[j,b,i,:],'g:',label = 'rossby')
 			ax[k].plot(t,pseudo_SPD[j,b,i,:],'k',label = 'FFE')
-			if (i==0 and j == 0 and (b == 0 or b == 5)):
+			if (i==0 and j == 0 and (b == 0 or b == 6)):
 				ax[k].legend(loc = 'upper left')
 			ax[k].ticklabel_format(style = 'sci',axis = 'y',scilimits=(0,0))
 			ax[k].grid()
@@ -128,7 +128,7 @@ for b in range(nbins):
 	#ax[0].set_ylim([0,3.e4])
 	#ax[1].set_ylim([0,5])	
 
-	fig_name = fig_dir + 'new_EO_zonal_SPD_bin%i' % (b+1)
+	fig_name = fig_dir + 'zonal_SPD_bin%i' % (b+1)
 	plt.savefig(fig_name)
 	
 	plt.close()

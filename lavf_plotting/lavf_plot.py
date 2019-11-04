@@ -16,7 +16,7 @@ from grid_plot import square_grid_plot, spd_grid_plot
 
 # INPUT PARAMETERS #
 
-regime = 2
+regime = 1
 
 home_dir = '/media/josiepark/Seagate Expansion Drive/PhD/DATA/Saves/%i' % regime
 fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/%i/STATS/LAVF/UNIFORM/' % regime
@@ -72,7 +72,7 @@ for b in range(nbins):
 			else:
 				ax[k].set_ylim([-.75,1])
 			k+=1
-	if (b == 0 or b == 5):
+	if (b == 0 or b == 6):
 		ax[0].legend(loc = 'lower left')
 	
 	ax[1].set_xlabel('Time Lag (days)')
@@ -144,7 +144,7 @@ for b in range(nbins):
 				ax[k].set_ylim([-.75,1])
 
 			k+=1
-	if (b == 0 or b == 5):
+	if (b == 0 or b == 6):
 		ax[0].legend(loc = 'lower left')
 	
 	ax[1].set_xlabel('Time Lag (days)')
@@ -161,21 +161,21 @@ for b in range(nbins):
 	
 # WRITE THETA TO FILE
 
-file_name = home_dir + '/STATS/THETA/pseudo_theta_osc.nc'
-theta_data = Dataset(file_name,'w',format='NETCDF4_CLASSIC')
-theta_data.createDimension('Bin',nbins)
-theta_data.createDimension('Dimension',2)
-theta_data.createDimension('Layer',2)
-theta_var = theta_data.createVariable('Theta',np.float64,('Bin','Dimension','Layer',))
-theta_var[:] = theta 
+#file_name = home_dir + '/STATS/THETA/pseudo_theta_osc.nc'
+#theta_data = Dataset(file_name,'w',format='NETCDF4_CLASSIC')
+#theta_data.createDimension('Bin',nbins)
+#theta_data.createDimension('Dimension',2)
+#theta_data.createDimension('Layer',2)
+#theta_var = theta_data.createVariable('Theta',np.float64,('Bin','Dimension','Layer',))
+#theta_var[:] = theta 
 
-file_name = home_dir + '/STATS/THETA/omega.nc'
-omega_data = Dataset(file_name,'w',format = 'NETCDF4_CLASSIC')
-omega_data.createDimension('Bin',nbins)
-omega_data.createDimension('Dimension',2)
-omega_data.createDimension('Layer',2)
-omega_var = omega_data.createVariable('Theta',np.float64,('Bin','Dimension','Layer'))
-omega_var[:] = omega
+#file_name = home_dir + '/STATS/THETA/omega.nc'
+#omega_data = Dataset(file_name,'w',format = 'NETCDF4_CLASSIC')
+#omega_data.createDimension('Bin',nbins)
+#omega_data.createDimension('Dimension',2)
+#omega_data.createDimension('Layer',2)
+#omega_var = omega_data.createVariable('Theta',np.float64,('Bin','Dimension','Layer'))
+#omega_var[:] = omega
 
 
 

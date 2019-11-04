@@ -14,7 +14,7 @@ plt.rcParams.update({'font.size': 8})
 
 # INPUT PARAMETERS #
 
-regime = 2
+regime = 1
 
 home_dir = '/media/josiepark/Seagate Expansion Drive/PhD/DATA/Saves/%i' % regime
 fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/%i/STATS/SPD/KINEMATIC/' % regime
@@ -53,8 +53,8 @@ pseudo_SPD = np.zeros((2,nbins,2,nt))
 for b in range(nbins):
 	file_name = home_dir + '/STATS/SPD/PSEUDO/pseudo_uniform_SPD_bin%i.nc' % (b+1)
 	spd_data = Dataset(file_name,'r')
-	pseudo_SPD[0,b,:,:] = np.mean(np.transpose(spd_data.variables['SPD'][:,:,0,:]),1)
-	pseudo_SPD[1,b,:,:] = np.mean(np.transpose(spd_data.variables['SPD'][:,:,1,:]),1)
+	pseudo_SPD[0,b,:,:] = np.mean(np.transpose(spd_data.variables['SPD'][:,0,:,:]),1)
+	pseudo_SPD[1,b,:,:] = np.mean(np.transpose(spd_data.variables['SPD'][:,1,:,:]),1)
 
 # PLOT SPD
 
@@ -75,10 +75,10 @@ for b in range(nbins):
 	k=0
 	for i in range(ncols):
 		for j in range(nrows):
-			ax[k].plot(t,SPD[j,b,i,:],'b-',label = 'rossbyHalf')
-			ax[k].plot(t,U0_SPD[j,b,i,:],'g-.',label = 'rossbyHalf +  zonal')
-			ax[k].plot(t,pseudo_SPD[j,b,i,:],'r--',label = 'FFE')
-			if (i==0 and j == 0):
+			ax[k].plot(t,SPD[j,b,i,:],'b-.',label = 'rossbyHalf')
+			ax[k].plot(t,U0_SPD[j,b,i,:],'r--',label = 'rossbyHalf +  zonal')
+			ax[k].plot(t,pseudo_SPD[j,b,i,:],'k-',label = 'FFE')
+			if (i==0 and j == 0 and (b == 0 or b == 6)):
 				ax[k].legend(loc = 'upper left')
 			ax[k].ticklabel_format(style = 'sci',axis = 'y',scilimits=(0,0))
 			ax[k].grid()
@@ -113,6 +113,8 @@ for b in range(nbins):
 
 	fig_name = fig_dir + 'zonal_SPD_bin%i' % (b+1)
 	plt.savefig(fig_name)
+	
+exit()
 
 # compare contributions across the bins
 

@@ -88,14 +88,80 @@ for i in range(ncols):
 			ax[k].set_yticklabels([])
 
 		plt.colorbar(c,ax=ax[k])
-		ax[0].set_title('Coherent Jet')
-		ax[2].set_title('Latent Jet')
+		
 
 		k+=1
+		
+ax[0].set_title('Coherent Jet')
+ax[2].set_title('Latent Jet')
 fig_name = fig_dir + 'eddy_psi'
 plt.savefig(fig_name)
 plt.show()
 
+plt.close()
+
+## CALCULATE VELOCTY OF eddying STREAM FUNCTION
+
+u_eddy = np.zeros((2,2,ii,jj,2))
+
+for i in range(2):
+
+	[u_eddy[i,0,:,:,:],u_eddy[i,1,:,:,:]] = velocity_from_psi(psi[i,:,:,:])
+	
+ax = square_grid_plot(nrows,ncols,left_space,right_space,bottom_space,top_space,hor_space,ver_space,fig_width)
+
+k = 0
+
+for i in range(ncols):
+	for j in range(nrows):
+		c = ax[k].pcolor(xx,yy,u_eddy[i,0,:,:,j],cmap = cm.jet)
+		if j == 1:
+			ax[k].set_xlabel('X (km)')
+		else:
+			ax[k].set_xticklabels([])
+		if i == 0:
+			ax[k].set_ylabel('Y (km)')
+		else:
+			ax[k].set_yticklabels([])
+
+		cbar = plt.colorbar(c,ax=ax[k])
+		cbar.ax.set_ylabel('u\' (cm s$^{-1}$)')
+
+		k+=1
+		
+ax[0].set_title('Coherent Jet')
+ax[2].set_title('Latent Jet')
+fig_name = fig_dir + 'eddy_u'
+plt.savefig(fig_name)
+plt.show()
+plt.close()
+
+ax = square_grid_plot(nrows,ncols,left_space,right_space,bottom_space,top_space,hor_space,ver_space,fig_width)
+
+k = 0
+
+for i in range(ncols):
+	for j in range(nrows):
+		c = ax[k].pcolor(xx,yy,u_eddy[i,1,:,:,j],cmap = cm.jet)
+		if j == 1:
+			ax[k].set_xlabel('X (km)')
+		else:
+			ax[k].set_xticklabels([])
+		if i == 0:
+			ax[k].set_ylabel('Y (km)')
+		else:
+			ax[k].set_yticklabels([])
+
+		cbar = plt.colorbar(c,ax=ax[k])
+		cbar.ax.set_ylabel('v\' (cm s$^{-1}$)')
+
+		k+=1
+		
+ax[0].set_title('Coherent Jet')
+ax[2].set_title('Latent Jet')
+fig_name = fig_dir + 'eddy_v'
+plt.savefig(fig_name)
+plt.show()
 plt.close()
 
 ax = square_grid_plot(nrows,ncols,left_space,right_space,bottom_space,top_space,hor_space,ver_space,fig_width)
@@ -148,11 +214,13 @@ for i in range(ncols):
 		else:
 			ax[k].set_yticklabels([])
 
-		plt.colorbar(c,ax=ax[k])
-		ax[0].set_title('Coherent Jet')
-		ax[2].set_title('Latent Jet')
+		cbar = plt.colorbar(c,ax=ax[k])
+		cbar.ax.set_ylabel('U (cm s$^{-1}$)')
 
 		k+=1
+		
+ax[0].set_title('Coherent Jet')
+ax[2].set_title('Latent Jet')
 fig_name = fig_dir + 'mean_u'
 plt.savefig(fig_name)
 plt.show()

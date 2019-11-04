@@ -42,6 +42,8 @@ tmp = np.transpose(diff_data.variables['Diffusivity'][:])
 K[1,:] = tmp
 
 K = K/86400.
+
+K = K*(1000**2)
 	
 
 # PLOT ALPHA SUPERIMPOSED ON THE TIME-AVERAGED STREAM FUNCTION
@@ -82,8 +84,6 @@ fig_width = 8.27/2.
 
 k = 0
 ax = square_grid_plot(nrows,ncols,left_space,right_space,bottom_space,top_space,hor_space,ver_space,fig_width)
-
-K = K*(1000)**2
 
 for i in range(ncols):
 	for j in range(nrows):	

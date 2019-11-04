@@ -13,7 +13,7 @@ plt.rcParams.update({'font.size': 8})
 
 # INPUT PARAMETERS #
 
-regime = 2
+regime = 1
 
 home_dir = '/media/josiepark/Seagate Expansion Drive/PhD/DATA/Saves/%i' % regime
 fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/%i/STATS/SPD/EOF/' % regime
@@ -123,7 +123,7 @@ if regime == 1:
 				ax[k].plot(t,ave_SPD[3,i,b,j,:],label = 'zonal')
 				ax[k].plot(t,ave_SPD[4,i,b,j,:],label = 'oscillations')
 				ax[k].plot(t,ave_SPD[5,i,b,j,:],label = 'altZonal')
-				if (i == 0 and j == 0 and (b == 0 or b == 5)):
+				if (i == 0 and j == 0 and (b == 0 or b == 6)):
 					ax[k].legend(loc = 'upper left')
 				ax[k].ticklabel_format(style = 'sci',axis = 'y',scilimits=(0,0))
 				ax[k].grid()
@@ -158,7 +158,7 @@ else:
 				ax[k].plot(t,ave_SPD[1,i,b,j,:],label = 'zonal')				
 				ax[k].plot(t,ave_SPD[3,i,b,j,:],label = 'oscillations')	
 				ax[k].plot(t,ave_SPD[5,i,b,j,:],label = 'altZonal')
-				if (i == 0 and j == 0 and (b == 0 or b == 5)):
+				if (i == 0 and j == 0 and (b == 0 or b == 6)):
 					ax[k].legend(loc = 'upper left')
 				ax[k].ticklabel_format(style = 'sci',axis = 'y',scilimits=(0,0))
 				ax[k].grid()

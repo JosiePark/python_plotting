@@ -47,7 +47,7 @@ t = np.arange(0,1000,1)
 nrows = 2
 ncols = 2
 right_space = 0.02
-left_space = 0.1
+left_space = 0.12
 top_space = 0.05
 bottom_space = 0.09
 hor_space = 0.08
@@ -80,7 +80,7 @@ for b in range(nbins):
 		ax[2].set_ylim([0,2.e4])
 		ax[3].set_ylim([0,2.e4])
 	
-	if (b == 0 or b == 5):
+	if (b == 0 or b == 6):
 		ax[0].legend(loc = 'upper left')
 	ax[1].set_xlabel('Time (days)')
 	ax[3].set_xlabel('Time (days)')
@@ -107,7 +107,7 @@ for b in range(nbins):
 			#ax[k].ticklabel_format(style = 'sci',axis = 'y',scilimits=(0,0))
 			ax[k].grid()
 			k+=1
-	if (b == 0 or b == 5):
+	if (b == 0 or b == 6):
 		ax[0].legend(loc = 'lower left')
 	#if (regime == 1):
 	#	ax[0].set_ylim([0,8.e7])

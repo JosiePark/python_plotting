@@ -14,7 +14,7 @@ plt.rcParams.update({'font.size': 8})
 
 # INPUT PARAMETERS #
 
-regime = 1
+regime = 2
 
 home_dir = '/media/josiepark/Seagate Expansion Drive/PhD/DATA/Saves/%i/' % regime
 fig_dir = '/home/josiepark/Project/PhD/PYTHON_FIGURES/%i/STATS/DIFFUSIVITY/' % regime
@@ -70,6 +70,8 @@ nrows = 2
 ncols = 2
 fig_width = 8.27
 
+K = K*(1000**2)
+
 k = 0
 ax = square_grid_plot(nrows,ncols,left_space,right_space,bottom_space,top_space,hor_space,ver_space,fig_width)
 
@@ -83,16 +85,16 @@ for i in range(ncols):
 		ax_K.plot(K[2,i,:,j],bin_centres,'r-.',label='FFE')
 		if (j == 0):
 			if (i == 0):
-				ax_K.set_xlabel('K$_x$ (km$^{2}$ s$^{-1}$)')
+				ax_K.set_xlabel('K$_x$ (m$^{2}$ s$^{-1}$)')
 			else:
-				ax_K.set_xlabel('K$_y$ (km$^{2}$ s$^{-1}$)')
+				ax_K.set_xlabel('K$_y$ (m$^{2}$ s$^{-1}$)')
 			ax[k].set_xticklabels([])
 		else:
 			ax[k].set_xlabel('X (km)')
 		#ax_K.set_xlim(0,3)
 		ax[k].set_ylim(0,520)
 		ax[k].set_xlim(0,520)
-		ax_K.ticklabel_format(style = 'sci',axis = 'x',scilimits=(0,0))
+		#ax_K.ticklabel_format(style = 'sci',axis = 'x',scilimits=(0,0))
 		if (i==0):
 			ax[k].set_ylabel('Y (km)')
 		else:
